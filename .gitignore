@@ -1,0 +1,74 @@
+# ---- Qt Creator ----
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+Makefile*
+*build-*
+
+# Qt Creator generated project files
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# ---- Build directories ----
+build/
+build-*/
+debug/
+release/
+Debug/
+Release/
+x64/
+x86/
+
+# ---- Object / binary files ----
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# ---- Qt generated / temp files ----
+*.autosave
+*.pyc
+*_pch.h.cpp
+*_resource.rc
+object_script.*.Release
+object_script.*.Debug
+*.qmlc
+*.jsc
+.qmake.stash
+*.gch
+*.pch
+
+# ---- Qt metadata ----
+.qtcreator/
+
+# ---- IDE / editor ----
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs ----
+*.log
