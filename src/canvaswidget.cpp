@@ -16,6 +16,9 @@ CanvasWidget::CanvasWidget(QWidget *parent) : QWidget(parent) {
     setPalette(pal);
     currentStepIndex = -1;
     setMouseTracking(true);
+
+    // Rays are clipped to the canvas border when saving, so the canvas keeps its size
+    setFixedSize(WIDTH, HEIGHT);
 }
 
 QVector<QLineF> CanvasWidget::getEdges() {
@@ -23,6 +26,8 @@ QVector<QLineF> CanvasWidget::getEdges() {
 }
 
 void CanvasWidget::updateState() {
+    // Points changed, the old steps are no longer valid
+    VoronoiDiagram::clearSteps();
     currentStepIndex = -1;
     repaint();
     emit pointsModified(points);
@@ -31,7 +36,6 @@ void CanvasWidget::updateState() {
 void CanvasWidget::clearCanvas() {
     points.clear();
     edges.clear();
-    VoronoiDiagram::clearSteps();
     updateState();
 }
 
@@ -48,7 +52,7 @@ void CanvasWidget::setDiagram(const QVector<QPointF>& newPoints, const QVector<Q
 }
 
 void CanvasWidget::stepByStep() {
-    if (points.size() <= 1) return;
+    if (VoronoiDiagram::sortAndUnique(points).size() <= 1) return;
 
     // The first step
     if (VoronoiDiagram::steps.isEmpty() || currentStepIndex >= VoronoiDiagram::steps.size() - 1) {
@@ -61,6 +65,14 @@ void CanvasWidget::stepByStep() {
 }
 
 void CanvasWidget::runCalculation() {
+    // No Voronoi edges for 0 or 1 distinct point
+    if (VoronoiDiagram::sortAndUnique(points).size() <= 1) {
+        edges.clear();
+        currentStepIndex = -1;
+        repaint();
+        return;
+    }
+
     edges = VoronoiDiagram::getVoronoiEdges(points);
     currentStepIndex = VoronoiDiagram::steps.size() - 1;
     repaint();
@@ -73,8 +85,14 @@ void CanvasWidget::addPoint(const QPointF& p) {
 }
 
 void CanvasWidget::mousePressEvent(QMouseEvent *event) {
+    // Positions are fractional under display scaling, round to integer coordinates
     if (event->button() == Qt::LeftButton)
-        addPoint(event->position());
+        addPoint(event->position().toPoint());
+}
+
+void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+    // The first click already added the point (the default implementation would add it again)
+    Q_UNUSED(event);
 }
 
 void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -94,6 +112,14 @@ void CanvasWidget::paintEvent(QPaintEvent *event) {
     painter.setPen(pointPen);
     painter.setBrush(Qt::black);
     painter.drawPoints(points);
+
+    // Rays end very far away, clip lines to the visible area before drawing
+    const QRectF area = QRectF(rect()).adjusted(-10, -10, 10, 10);
+    auto drawClippedLine = [&](const QLineF& line) {
+        QLineF clipped;
+        if (VoronoiDiagram::clipLine(line, area, clipped))
+            painter.drawLine(clipped);
+    };
 
     // Draw Lines
     if (currentStepIndex >= 0 && currentStepIndex < VoronoiDiagram::steps.size()) {
@@ -122,7 +148,7 @@ void CanvasWidget::paintEvent(QPaintEvent *event) {
             }
 
             painter.setPen(linePen);
-            painter.drawLine(line);
+            drawClippedLine(line);
         }
 
         // Convex hull
@@ -151,6 +177,7 @@ void CanvasWidget::paintEvent(QPaintEvent *event) {
         // Run
         painter.setPen(QPen(Qt::red, 2));
         painter.setBrush(Qt::NoBrush);
-        painter.drawLines(edges);
+        for (const QLineF& line : std::as_const(edges))
+            drawClippedLine(line);
     }
 }

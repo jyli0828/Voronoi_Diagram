@@ -18,6 +18,8 @@
 #include <QGroupBox>
 #include <QStatusBar>
 #include <QCoreApplication>
+#include <QRegularExpression>
+#include <cmath>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -52,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout *xLayout = new QHBoxLayout();
     xLayout->addWidget(new QLabel("X:"));
     inputX = new QSpinBox(this);
-    inputX->setRange(-2000, 2000);
+    inputX->setRange(0, WIDTH); // Points must lie on the canvas
     xLayout->addWidget(inputX);
     inputGroupLayout->addLayout(xLayout);
 
@@ -60,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout *yLayout = new QHBoxLayout();
     yLayout->addWidget(new QLabel("Y:"));
     inputY = new QSpinBox(this);
-    inputY->setRange(-2000, 2000);
+    inputY->setRange(0, HEIGHT);
     yLayout->addWidget(inputY);
     inputGroupLayout->addLayout(yLayout);
 
@@ -100,7 +102,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() {}
 
 void MainWindow::updateMousePos(QPointF pos) {
-    QString text = QString("Pos: (%1, %2)").arg((int)pos.x()).arg((int)pos.y());
+    // Rounded the same way as a clicked point
+    QString text = QString("Pos: (%1, %2)").arg(qRound(pos.x())).arg(qRound(pos.y()));
     coordLabel->setText(text);
 }
 
@@ -192,16 +195,23 @@ void MainWindow::readFile() {
 
     QFile checkFile(fileName);
     if (!checkFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Cannot open output file for reading:" << fileName;
+        QMessageBox::warning(this, tr("Error"), tr("Cannot open file for reading"));
         return;
     }
 
+    // The first non-empty line of an output file starts with "P"
     QTextStream checkIn(&checkFile);
-    QString firstLine = checkIn.readLine().trimmed();
+    QString firstLine;
+    while (firstLine.isEmpty() && !checkIn.atEnd())
+        firstLine = checkIn.readLine().trimmed();
     checkFile.close();
 
     QFile file(fileName);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text) && firstLine[0] == 'P') readOutputFormat(&file);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, tr("Error"), tr("Cannot open file for reading"));
+        return;
+    }
+    if (firstLine.startsWith('P')) readOutputFormat(&file);
     else readInputFormat(&file);
 }
 
@@ -240,16 +250,19 @@ void MainWindow::readInputFormat(QFile *file) {
 
     while (!textStream.atEnd()) {
         // 1. Loop until we find the next number "n"
+        ok = false;
         while (!textStream.atEnd()) {
-            QString line = textStream.readLine().trimmed();
-
-            // Ignore comments and empty lines
-            if (line.startsWith("#") || line.isEmpty()) continue;
+            // Ignore comments (also at the end of a line) and empty lines
+            QString line = textStream.readLine().section('#', 0, 0).trimmed();
+            if (line.isEmpty()) continue;
 
             // Non-comment line, try to convert it to an integer
             n = line.toInt(&ok);
             if (ok) break;
         }
+
+        // No more test cases (file ends without "0")
+        if (!ok) return;
 
         // 2. Number of points is zero, file test stopped
         if (n == 0) {
@@ -263,8 +276,9 @@ void MainWindow::readInputFormat(QFile *file) {
         QStringList pointStrings;
 
         while (points.size() < n && !textStream.atEnd()) {
-            QString dataLine = textStream.readLine().trimmed();
-            QStringList parts = dataLine.split(" ", Qt::SkipEmptyParts);
+            // Coordinates may be separated by spaces or tabs
+            QString dataLine = textStream.readLine().section('#', 0, 0).trimmed();
+            QStringList parts = dataLine.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
 
             if (parts.size() >= 2) {
                 bool okX, okY;
@@ -283,7 +297,7 @@ void MainWindow::readInputFormat(QFile *file) {
 
         QString verificationMsg = QString(tr("Read test case: %1 points\n%2\n"
                                              "Press OK to continue the next test case."))
-                                            .arg(n)
+                                            .arg(points.size())
                                             .arg(pointStrings.join(", "));
         QMessageBox msgBox(this);
         msgBox.setWindowTitle(tr("Test Case Read"));
@@ -300,11 +314,11 @@ void MainWindow::readOutputFormat(QFile *file) {
 
     while (!textStream.atEnd()) {
         QString line = textStream.readLine().trimmed();
-        QStringList parts = line.split(" ", Qt::SkipEmptyParts);
+        QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
         if (parts.isEmpty()) continue;
-        else if (parts[0] == "P")
+        else if (parts[0] == "P" && parts.size() >= 3)
             points.append(QPointF(parts[1].toDouble(), parts[2].toDouble()));
-        else if (parts[0] == "E") {
+        else if (parts[0] == "E" && parts.size() >= 5) {
             QPointF p1(parts[1].toDouble(), parts[2].toDouble());
             QPointF p2(parts[3].toDouble(), parts[4].toDouble());
             edges.append(QLineF(p1, p2));
@@ -326,28 +340,40 @@ void MainWindow::saveFile() {
 
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "Cannot open file for writing:" << fileName;
+        QMessageBox::warning(this, tr("Error"), tr("Cannot open file for writing"));
         return;
     }
 
-    QVector<QPointF> points = canvas->getPoints();
+    // Sort points by lexical order, a repeated point is written once
+    QVector<QPointF> points = VoronoiDiagram::sortAndUnique(canvas->getPoints());
     QVector<QLineF> edges = canvas->getEdges();
     QTextStream out(&file);
 
-    // Sort points by lexical order
-    std::sort(points.begin(), points.end(), VoronoiDiagram::comparePoints);
     for (const QPointF& p : std::as_const(points))
         out << "P " << p.x() << " " << p.y() << "\n";
 
-    // Sort segments by lexical order
-    for (QLineF& e : edges) {
-        QPointF p1 = e.p1(), p2 = e.p2();
-        if (!VoronoiDiagram::comparePoints(p1, p2))
-            e.setPoints(p2, p1);
-    }
-    std::sort(edges.begin(), edges.end(), VoronoiDiagram::compareEdges);
+    // Clip segments to the canvas border, coordinates are truncated to integers (as in the spec example).
+    // A clipped end point is computed from a far away ray end and is off by about 1e-6, while border
+    // crossings of integer points are multiples of 1/1220, so it gets a larger tolerance
+    const QRectF outputRect(0, 0, WIDTH, HEIGHT);
+    auto toInt = [](double v, double tolerance) { return (int)std::floor(v + tolerance); };
+    QVector<QLineF> outEdges;
     for (const QLineF& e : std::as_const(edges)) {
+        QLineF clipped;
+        if (!VoronoiDiagram::clipLine(e, outputRect, clipped)) continue;
+        double tol1 = (clipped.p1() == e.p1()) ? 1e-6 : 1e-4;
+        double tol2 = (clipped.p2() == e.p2()) ? 1e-6 : 1e-4;
+        QPointF p1(toInt(clipped.x1(), tol1), toInt(clipped.y1(), tol1)), p2(toInt(clipped.x2(), tol2), toInt(clipped.y2(), tol2));
+        if (p1 == p2) continue; // Only touches the canvas
+
+        // Sort segments by lexical order
+        if (!VoronoiDiagram::comparePoints(p1, p2))
+            std::swap(p1, p2);
+        outEdges.append(QLineF(p1, p2));
+    }
+    std::sort(outEdges.begin(), outEdges.end(), VoronoiDiagram::compareEdges);
+    for (const QLineF& e : std::as_const(outEdges)) {
         QPointF p1 = e.p1(), p2 = e.p2();
-        out << "E " << p1.x() << " " << p1.y() << " " << p2.x() << " " << p2.y() << "\n";
+        out << "E " << (int)p1.x() << " " << (int)p1.y() << " " << (int)p2.x() << " " << (int)p2.y() << "\n";
     }
 }
