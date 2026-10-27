@@ -43,11 +43,14 @@ windeployqt --release --no-translations release\VoronoiDiagram.exe
 | `src/`、`include/` | 原始碼，演算法在 `VoronoiDiagram.cpp` |
 | `VoronoiDiagram.pro` | qmake 專案檔 |
 | `exe/` | 可直接執行的程式與所需 DLL |
-| `testcase/` | 測試輸入檔；`testcase/output/` 為各筆測資的輸出檔 |
+| `testcase/input/` | 測試輸入檔 |
+| `testcase/output/` | 各筆測資的輸出檔 |
+| `testcase/sample_output.txt` | 輸出格式範例（11 × 11 網格） |
 | `img/` | 報告用圖片 |
 | `M143040074.html` | 報告 |
 | `M143040074.txt` | 程式原始碼合併檔 |
 | `tools/merge_sources.py` | 產生程式原始碼合併檔的腳本 |
+| `tools/pointGenerator.py` | 隨機產生測試點座標 |
 
 ## 產生程式原始碼合併檔
 
