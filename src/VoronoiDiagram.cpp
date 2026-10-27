@@ -8,13 +8,16 @@
 #include <cmath>
 #include <QMultiMap>
 #include <QDebug>
+#include <QtMath>
 
 const double EPSILON = 1e-6;
-const int SCALE = 2000;
+const double FAR = 1e10; // Length of rays to infinity, much larger than any Voronoi vertex
 
 bool PointKey::operator<(const PointKey& other) const {
     if (abs(p.x() - other.p.x()) > EPSILON) return p.x() < other.p.x();
-    return p.y() < other.p.y();
+    if (abs(p.y() - other.p.y()) > EPSILON) return p.y() < other.p.y();
+    if (abs(r - other.r) > EPSILON * (1 + std::max(r, other.r))) return r < other.r;
+    return false;
 }
 
 bool VoronoiDiagram::comparePoints(const QPointF& a, const QPointF& b) {
@@ -33,8 +36,46 @@ bool VoronoiDiagram::compareEdges(const QLineF& e1, const QLineF& e2) {
 }
 
 bool VoronoiDiagram::isBoundaryPoint(const QPointF& p) {
-    const double LIMIT = SCALE * 0.8;
+    // Ray end points are at least FAR away from the origin, Voronoi vertices are much closer
+    const double LIMIT = FAR * 0.5;
     return (abs(p.x()) > LIMIT || abs(p.y()) > LIMIT);
+}
+
+QPointF VoronoiDiagram::rayEnd(const QPointF& origin, const QPointF& dir) {
+    double len = std::sqrt(QPointF::dotProduct(dir, dir));
+    double reach = FAR + std::abs(origin.x()) + std::abs(origin.y());
+    return origin + dir / len * reach;
+}
+
+bool VoronoiDiagram::clipLine(const QLineF& line, const QRectF& rect, QLineF& clipped) {
+    double x0 = line.x1(), y0 = line.y1(), dx = line.dx(), dy = line.dy();
+    double t0 = 0, t1 = 1;
+    // Each boundary: p * t <= q
+    const double p[4] = {-dx, dx, -dy, dy};
+    const double q[4] = {x0 - rect.left(), rect.right() - x0, y0 - rect.top(), rect.bottom() - y0};
+    int side0 = -1, side1 = -1; // Which boundary the clipped end points lie on
+    for (int i = 0; i < 4; ++i) {
+        if (p[i] == 0) {
+            if (q[i] < 0) return false; // Parallel and outside
+            continue;
+        }
+        double t = q[i] / p[i];
+        if (p[i] < 0 && t > t0) { t0 = t; side0 = i; }
+        else if (p[i] > 0 && t < t1) { t1 = t; side1 = i; }
+    }
+    if (t0 > t1) return false;
+
+    // Put clipped end points exactly on the boundary
+    auto pointAt = [&](double t, int side) {
+        QPointF pt(x0 + t * dx, y0 + t * dy);
+        if (side == 0) pt.setX(rect.left());
+        else if (side == 1) pt.setX(rect.right());
+        else if (side == 2) pt.setY(rect.top());
+        else if (side == 3) pt.setY(rect.bottom());
+        return pt;
+    };
+    clipped = QLineF(pointAt(t0, side0), pointAt(t1, side1));
+    return true;
 }
 
 QVector<QPointF> VoronoiDiagram::sortAndUnique(const QVector<QPointF>& points) {
@@ -77,21 +118,21 @@ VoronoiResult VoronoiDiagram::voronoi3(const QVector<QPointF>& points) {
         QPointF vec01 = points[1] - points[0];
         QPointF normal01(vec01.y(), -vec01.x());
         if (QPointF::dotProduct(normal01, points[2] - mid01) > 0) normal01 = -normal01;
-        res.edges.append(QLineF(ccenter, ccenter + normal01 * SCALE));
+        res.edges.append(QLineF(ccenter, rayEnd(ccenter, normal01)));
         res.endPoints.append(qMakePair(points[0], points[1]));
 
         QPointF mid12 = (points[1] + points[2]) / 2;
         QPointF vec12 = points[2] - points[1];
         QPointF normal12(vec12.y(), -vec12.x());
         if (QPointF::dotProduct(normal12, points[0] - mid12) > 0) normal12 = -normal12;
-        res.edges.append(QLineF(ccenter, ccenter + normal12 * SCALE));
+        res.edges.append(QLineF(ccenter, rayEnd(ccenter, normal12)));
         res.endPoints.append(qMakePair(points[1], points[2]));
 
         QPointF mid02 = (points[0] + points[2]) / 2;
         QPointF vec02 = points[2] - points[0];
         QPointF normal02(vec02.y(), -vec02.x());
         if (QPointF::dotProduct(normal02, points[1] - mid02) > 0) normal02 = -normal02;
-        res.edges.append(QLineF(ccenter, ccenter + normal02 * SCALE));
+        res.edges.append(QLineF(ccenter, rayEnd(ccenter, normal02)));
         res.endPoints.append(qMakePair(points[0], points[2]));
     }
 
@@ -118,7 +159,7 @@ QLineF VoronoiDiagram::getPerpBisector(const QPointF& p1, const QPointF& p2) {
     QPointF vec = p2 - p1;
     QPointF normal(vec.y(), -vec.x());
     // Allow extending beyond the window
-    return QLineF(mid + normal * SCALE, mid - normal * SCALE);
+    return QLineF(rayEnd(mid, normal), rayEnd(mid, -normal));
 }
 
 QPointF VoronoiDiagram::calculateCircumcenter(const QPointF& p1, const QPointF& p2, const QPointF& p3) {
@@ -175,7 +216,7 @@ VoronoiResult VoronoiDiagram::divideAndConquer(const QVector<QPointF>& points) {
 
     if (n == 1)
         res.convexHull.append(points[0]);
-    else if (n == 2)
+    else if (n == 2 || areAllCollinear(points)) // Collinear sub-problems are solved directly
         res = solveCollinear(points);
     else if (n == 3)
         res = voronoi3(points);
@@ -227,17 +268,15 @@ VoronoiResult VoronoiDiagram::merge(const VoronoiResult& left, const VoronoiResu
     QVector<QPair<QPointF, QPointF>> hyperPlanePoints;
 
     QPointF L = left.convexHull[upperTan.first], R = right.convexHull[upperTan.second];
-    QPointF endL = left.convexHull[lowerTan.first], endR = right.convexHull[lowerTan.second];
 
-    // Calculate start point (Extend upwards from the midpoint of the upper tangent)
-    QPointF startMid = (L + R) / 2;
-    QPointF tanVec = R - L;
-    QPointF upNormal(tanVec.y(), -tanVec.x());
-    QPointF currentPos = startMid + upNormal * SCALE; // Hyperplane start point
+    // The hyperplane starts from infinity above the upper tangent
+    bool atStart = true;
+    QPointF currentPos;
 
     // Copy edges for clipping
     QVector<QLineF> newLeftEdges = left.edges;
     QVector<QLineF> newRightEdges = right.edges;
+    QVector<bool> leftRemoved(left.edges.size(), false), rightRemoved(right.edges.size(), false);
 
     // PointKey maps a point to indices of edges incident to it
     // QMultiMap 一對多，QMap 一對一
@@ -251,143 +290,137 @@ VoronoiResult VoronoiDiagram::merge(const VoronoiResult& left, const VoronoiResu
         rightEdgeMap.insert(right.endPoints[i].second, i);
     }
 
+    // An intersection of the hyperplane with an edge of the region of L (or R)
+    struct Hit {
+        bool isLeft;
+        int edgeIdx;
+        QPointF other;   // The other point that generated the edge
+        QPointF point;   // Intersection
+        double t;        // Position along the hyperplane direction
+        bool atEndPoint; // Intersection is an existing Voronoi vertex
+    };
+
     // --- Hyperplane Scan Loop ---
     int loopSafety = 0;
-    const int MAX_LOOP = 500;
+    const int MAX_LOOP = left.edges.size() + right.edges.size() + 10;
     while (true) {
         if (loopSafety++ > MAX_LOOP) {
             qWarning() << "Hyperplane scan loop limit reached!";
             break;
         }
 
-        // 1. Calculate the perpendicular bisector of current L and R
-        QLineF bisector = getPerpBisector(L, R);
+        // 1. The perpendicular bisector of current L and R, dir points downwards along the hyperplane
+        QPointF mid = (L + R) / 2;
+        QPointF vec = R - L;
+        QPointF dir(-vec.y(), vec.x());
+        dir /= std::sqrt(QPointF::dotProduct(dir, dir));
+        double currentT = atStart ? -qInf() : QPointF::dotProduct(currentPos - mid, dir);
 
-        // 2. Find the nearest intersection with Voronoi edges
-        double bestDistL = 1e18, bestDistR = 1e18;
-        int hitIdxL = -1, hitIdxR = -1;
-        QPointF hitPointL, hitPointR;
+        // 2. Find intersections below the current position with edges of the regions of L and R
+        QVector<Hit> hits;
+        auto scanEdges = [&](bool isLeft, const QPointF& site) {
+            const QMultiMap<PointKey, int>& edgeMap = isLeft ? leftEdgeMap : rightEdgeMap;
+            const QVector<QPair<QPointF, QPointF>>& endPoints = isLeft ? left.endPoints : right.endPoints;
+            const QVector<QLineF>& edges = isLeft ? newLeftEdges : newRightEdges;
+            const QVector<bool>& removed = isLeft ? leftRemoved : rightRemoved;
 
-        // Scan Left Edges
-        auto lList = leftEdgeMap.values(PointKey(L));
-        for (int edgeIdx : std::as_const(lList)) {
-            QPointF intersection;
-            QLineF::IntersectionType type = bisector.intersects(newLeftEdges[edgeIdx], &intersection);
+            const QList<int> edgeList = edgeMap.values(PointKey(site));
+            for (int edgeIdx : edgeList) {
+                if (removed[edgeIdx]) continue;
+                QPointF other = (endPoints[edgeIdx].first == site) ? endPoints[edgeIdx].second : endPoints[edgeIdx].first;
 
-            // Check if intersection is below relative to scan direction
-            double distSq = QPointF::dotProduct(intersection - currentPos, intersection - currentPos);
-            QPointF scanDir = intersection - currentPos;
-            QPointF biDir = bisector.p2() - bisector.p1(); // Direction of bisector
+                // The edge lies on the bisector of site and other, so it meets the bisector of L and R
+                // at the circumcenter of L, R and other (parallel if they are collinear)
+                if (std::abs(crossProduct(L, R, other)) <= EPSILON) continue;
+                QPointF p = calculateCircumcenter(L, R, other);
+                double t = QPointF::dotProduct(p - mid, dir);
+                if (t <= currentT + EPSILON) continue;
 
-            // Valid intersection: Intersects segment AND dist > epsilon AND direction matches
-            if (type == QLineF::BoundedIntersection && distSq > EPSILON && QPointF::dotProduct(scanDir, biDir) > 0) {
-                if (distSq < bestDistL) {
-                    bestDistL = distSq;
-                    hitIdxL = edgeIdx;
-                    hitPointL = intersection;
-                }
+                // The intersection must lie on the (clipped) edge
+                const QLineF& e = edges[edgeIdx];
+                QPointF eDir = e.p2() - e.p1();
+                eDir /= std::sqrt(QPointF::dotProduct(eDir, eDir));
+                if (QPointF::dotProduct(p - e.p1(), eDir) < -EPSILON || QPointF::dotProduct(e.p2() - p, eDir) < -EPSILON) continue;
+
+                // Snap to an existing vertex so that the same vertex keeps the same coordinates
+                bool atEndPoint = true;
+                if (QLineF(p, e.p1()).length() < EPSILON) p = e.p1();
+                else if (QLineF(p, e.p2()).length() < EPSILON) p = e.p2();
+                else atEndPoint = false;
+
+                hits.append({isLeft, edgeIdx, other, p, t, atEndPoint});
             }
+        };
+        scanEdges(true, L);
+        scanEdges(false, R);
+
+        // No more intersections: the rest of the hyperplane goes to infinity
+        if (hits.isEmpty()) {
+            QPointF start = atStart ? rayEnd(mid, -dir) : currentPos;
+            hyperPlane.append(QLineF(start, rayEnd(atStart ? mid : currentPos, dir)));
+            hyperPlanePoints.append(qMakePair(L, R));
+            break;
         }
 
-        // Scan Right Edges
-        auto rList = rightEdgeMap.values(PointKey(R));
-        for (int edgeIdx : std::as_const(rList)) {
-            QPointF intersection;
-            QLineF::IntersectionType type = bisector.intersects(newRightEdges[edgeIdx], &intersection);
+        // 3. Determine Hit Event: all intersections at the nearest point are handled together
+        //    (more than one when 4 or more points lie on the same circle)
+        double bestT = hits[0].t;
+        for (const Hit& h : std::as_const(hits))
+            bestT = std::min(bestT, h.t);
 
-            double distSq = QPointF::dotProduct(intersection - currentPos, intersection - currentPos);
-            QPointF scanDir = intersection - currentPos;
-            QPointF biDir = bisector.p2() - bisector.p1();
+        QVector<Hit> nearHits;
+        for (const Hit& h : std::as_const(hits))
+            if (h.t <= bestT + EPSILON) nearHits.append(h);
 
-            if (type == QLineF::BoundedIntersection && distSq > EPSILON && QPointF::dotProduct(scanDir, biDir) > 0) {
-                if (distSq < bestDistR) {
-                    bestDistR = distSq;
-                    hitIdxR = edgeIdx;
-                    hitPointR = intersection;
-                }
-            }
-        }
+        QPointF v = nearHits[0].point;
+        for (const Hit& h : std::as_const(nearHits))
+            if (h.atEndPoint) { v = h.point; break; }
 
-        // 3. Determine Hit Event
-        bool hitLeft = false, hitRight = false;
-        QLineF edge;
-
-        // Simultaneous Hit
-        if (abs(bestDistL - bestDistR) < EPSILON) {
-            hitLeft = true;
-            hitRight = true;
-            edge = QLineF(currentPos, hitPointL);
-            currentPos = hitPointL;
-        }
-        // Left hit
-        else if (bestDistL < bestDistR) {
-            hitLeft = true;
-            edge = QLineF(currentPos, hitPointL);
-            currentPos = hitPointL;
-        }
-        // Right hit
-        else {
-            hitRight = true;
-            edge = QLineF(currentPos, hitPointR);
-            currentPos = hitPointR;
-        }
-
-        hyperPlane.append(edge);
+        hyperPlane.append(QLineF(atStart ? rayEnd(v, -dir) : currentPos, v));
         hyperPlanePoints.append(qMakePair(L, R));
 
-        // 4. Clip Edges and Update Endpoints
-        if (hitIdxL == -1 && hitIdxR == -1) {
-            // Set of vertically collinear points (Horizontal perpendicular bisector)
-            QPointF biDir = bisector.p2() - bisector.p1();
-            double len = QPointF::dotProduct(biDir, biDir);
-            QPointF unitDir = biDir / len;
+        // 4. Find the next L and R
+        // All generating points lie on a circle centered at v. Measured from the incoming hyperplane
+        // and turning towards L, the angles go: L (smallest) ... next L, next R ... R (largest)
+        QPointF back = -dir;
+        double side = (crossProduct(QPointF(), back, L - v) > 0) ? 1 : -1;
+        auto angleOf = [&](const QPointF& w) {
+            double a = std::atan2(side * crossProduct(QPointF(), back, w), QPointF::dotProduct(back, w));
+            return (a < 0) ? a + 2 * M_PI : a;
+        };
 
-            hyperPlane.append(QLineF(currentPos, currentPos + unitDir * SCALE));
-            hyperPlanePoints.append(qMakePair(L, R));
-            break;
+        QPointF nextL = L, nextR = R;
+        double maxAngleL = angleOf(L - v), minAngleR = angleOf(R - v);
+        for (const Hit& h : std::as_const(nearHits)) {
+            double a = angleOf(h.other - v);
+            if (h.isLeft && a > maxAngleL) { maxAngleL = a; nextL = h.other; }
+            if (!h.isLeft && a < minAngleR) { minAngleR = a; nextR = h.other; }
+        }
+        QPointF nextVec = nextR - nextL;
+        double outAngle = angleOf(QPointF(-nextVec.y(), nextVec.x())); // Outgoing hyperplane
+
+        // 5. Clip Edges: keep the parts on their own side of the hyperplane
+        //    (left side: between the incoming and the outgoing hyperplane, right side: the rest)
+        for (const Hit& h : std::as_const(nearHits)) {
+            QLineF &e = h.isLeft ? newLeftEdges[h.edgeIdx] : newRightEdges[h.edgeIdx];
+            auto keepPart = [&](const QPointF& endPoint) {
+                if (QLineF(v, endPoint).length() < EPSILON) return false;
+                return (angleOf(endPoint - v) < outAngle) == h.isLeft;
+            };
+            bool keep1 = keepPart(e.p1()), keep2 = keepPart(e.p2());
+
+            if (keep1 && !keep2)
+                e.setP2(v);
+            else if (!keep1 && keep2)
+                e.setP1(v);
+            else if (!keep1 && !keep2)
+                (h.isLeft ? leftRemoved : rightRemoved)[h.edgeIdx] = true; // Entirely on the wrong side
         }
 
-        if (hitLeft) {
-            QLineF &e = newLeftEdges[hitIdxL];
-            // Keep the segment closer to L, clip the rest
-            if (QPointF::dotProduct(e.p1()-L, e.p1()-L) < QPointF::dotProduct(e.p1()-R, e.p1()-R))
-                e.setP2(currentPos);
-            else
-                e.setP1(currentPos);
-
-            // Traverse to the next point on the left
-            QPointF p1 = left.endPoints[hitIdxL].first;
-            QPointF p2 = left.endPoints[hitIdxL].second;
-            L = (PointKey(p1).p != L) ? p1 : p2;
-        }
-
-        if (hitRight) {
-            QLineF &e = newRightEdges[hitIdxR];
-            // Keep the segment closer to R
-            if (QPointF::dotProduct(e.p1()-R, e.p1()-R) < QPointF::dotProduct(e.p1()-L, e.p1()-L))
-                e.setP2(currentPos);
-            else
-                e.setP1(currentPos);
-
-            // Traverse to the next point on the right
-            QPointF p1 = right.endPoints[hitIdxR].first;
-            QPointF p2 = right.endPoints[hitIdxR].second;
-            R = (PointKey(p1).p != R) ? p1 : p2;
-        }
-
-        // 5. Check Termination Condition (Reached Lower Tangent)
-        bool reachL = (abs(L.x() - endL.x()) < EPSILON && abs(L.y() - endL.y()) < EPSILON);
-        bool reachR = (abs(R.x() - endR.x()) < EPSILON && abs(R.y() - endR.y()) < EPSILON);
-
-        if (reachL && reachR) {
-            // Add the final infinite segment downwards
-            QLineF finalBisector = getPerpBisector(L, R);
-            QPointF dir = finalBisector.p2() - finalBisector.p1();
-            if (dir.y() < 0) dir = -dir; // Ensure downwards
-            hyperPlane.append(QLineF(currentPos, currentPos + dir * SCALE));
-            hyperPlanePoints.append(qMakePair(L, R));
-            break;
-        }
+        L = nextL;
+        R = nextR;
+        currentPos = v;
+        atStart = false;
     }
 
     stepEdges.append(hyperPlane);
@@ -396,11 +429,17 @@ VoronoiResult VoronoiDiagram::merge(const VoronoiResult& left, const VoronoiResu
 
     // --- Combine Results ---
     // Append clipped edges and the new hyperplane
-    res.edges.append(newLeftEdges);
-    res.endPoints.append(left.endPoints);
+    for (int i = 0; i < newLeftEdges.size(); ++i) {
+        if (leftRemoved[i]) continue;
+        res.edges.append(newLeftEdges[i]);
+        res.endPoints.append(left.endPoints[i]);
+    }
 
-    res.edges.append(newRightEdges);
-    res.endPoints.append(right.endPoints);
+    for (int i = 0; i < newRightEdges.size(); ++i) {
+        if (rightRemoved[i]) continue;
+        res.edges.append(newRightEdges[i]);
+        res.endPoints.append(right.endPoints[i]);
+    }
 
     res.edges.append(hyperPlane);
     res.endPoints.append(hyperPlanePoints);
@@ -447,11 +486,16 @@ void VoronoiDiagram::eliminateEdges(VoronoiResult& res) {
     while (changed) {
         changed = false;
 
-        // 1. Build Degree Map (Count connections for each point)
+        // 1. Build Degree Map (Count connections for each vertex)
+        // A vertex is identified by its position and its distance to the generating points, so that
+        // a vertex of the left diagram and one of the right diagram at the same position are not mixed up
+        auto vertexKey = [&](const QPointF& p, int edgeIdx) {
+            return PointKey(p, QLineF(p, res.endPoints[edgeIdx].first).length());
+        };
         QMap<PointKey, int> degree;
-        for (const auto& e : std::as_const(res.edges)) {
-            degree[PointKey(e.p1())]++;
-            degree[PointKey(e.p2())]++;
+        for (int i = 0; i < res.edges.size(); ++i) {
+            degree[vertexKey(res.edges[i].p1(), i)]++;
+            degree[vertexKey(res.edges[i].p2(), i)]++;
         }
 
         QVector<QLineF> validEdges;
@@ -463,10 +507,10 @@ void VoronoiDiagram::eliminateEdges(VoronoiResult& res) {
             bool remove = false;
 
             // Check P1: If internal (not boundary) and has degree <= 1 -> Dangling
-            if (!isBoundaryPoint(e.p1()) && degree[PointKey(e.p1())] <= 1)
+            if (!isBoundaryPoint(e.p1()) && degree[vertexKey(e.p1(), i)] <= 1)
                 remove = true;
             // Check P2
-            else if (!isBoundaryPoint(e.p2()) && degree[PointKey(e.p2())] <= 1)
+            else if (!isBoundaryPoint(e.p2()) && degree[vertexKey(e.p2(), i)] <= 1)
                 remove = true;
 
             if (remove)
@@ -486,15 +530,15 @@ void VoronoiDiagram::eliminateEdges(VoronoiResult& res) {
 QPair<int, int> VoronoiDiagram::getUpperTangent(const QVector<QPointF>& leftHull, const QVector<QPointF>& rightHull) {
     int nL = leftHull.size(), nR = rightHull.size();
 
-    // Find rightmost of left hull
+    // Find rightmost of left hull (lexicographically, so ties in x pick the point next to the right hull)
     int l = 0;
     for (int i = 1; i < nL; ++i)
-        if (leftHull[i].x() > leftHull[l].x()) l = i;
+        if (comparePoints(leftHull[l], leftHull[i])) l = i;
 
     // Find leftmost of right hull
     int r = 0;
     for (int i = 1; i < nR; ++i)
-        if (rightHull[i].x() < rightHull[r].x()) r = i;
+        if (comparePoints(rightHull[i], rightHull[r])) r = i;
 
     // Adjust points using the Walking Algorithm
     bool done = false;
@@ -524,11 +568,11 @@ QPair<int, int> VoronoiDiagram::getLowerTangent(const QVector<QPointF>& leftHull
 
     int l = 0;
     for (int i = 1; i < nL; ++i)
-        if (leftHull[i].x() > leftHull[l].x()) l = i;
+        if (comparePoints(leftHull[l], leftHull[i])) l = i;
 
     int r = 0;
     for (int i = 1; i < nR; ++i)
-        if (rightHull[i].x() < rightHull[r].x()) r = i;
+        if (comparePoints(rightHull[i], rightHull[r])) r = i;
 
     bool done = false;
     while (!done) {

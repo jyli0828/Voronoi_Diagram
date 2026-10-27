@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QPointF>
 #include <QLineF>
+#include <QRectF>
 
 struct VoronoiResult {
     QVector<QLineF> edges; // Voronoi edges
@@ -29,7 +30,8 @@ struct VoronoiStep {
 class PointKey {
 public:
     QPointF p;
-    PointKey(QPointF _p) : p(_p) {}
+    double r; // Distance from a Voronoi vertex to its generating points, distinguishes vertices at the same position
+    PointKey(QPointF _p, double _r = 0) : p(_p), r(_r) {}
     bool operator<(const PointKey& other) const;
 };
 
@@ -40,6 +42,9 @@ public:
     static bool compareEdges(const QLineF& e1, const QLineF& e2);
 
     static bool isBoundaryPoint(const QPointF& p);
+
+    // Clip a line segment to a rectangle, return false if it lies outside (Liang-Barsky)
+    static bool clipLine(const QLineF& line, const QRectF& rect, QLineF& clipped);
 
     static QVector<QPointF> sortAndUnique(const QVector<QPointF>& points);
 
@@ -52,6 +57,9 @@ public:
 
 private:
     static VoronoiResult voronoi3(const QVector<QPointF>& points);
+
+    // End point of a ray from origin in direction dir, far enough to be a boundary point
+    static QPointF rayEnd(const QPointF& origin, const QPointF& dir);
 
     static QLineF getPerpBisector(const QPointF& p1, const QPointF& p2);
     static QPointF calculateCircumcenter(const QPointF& p1, const QPointF& p2, const QPointF& p3);
