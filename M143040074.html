@@ -1,130 +1,347 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>@media (prefers-color-scheme:dark){.markdown-body{color-scheme:dark;--color-prettylights-syntax-comment:#8b949e;--color-prettylights-syntax-constant:#79c0ff;--color-prettylights-syntax-entity:#d2a8ff;--color-prettylights-syntax-storage-modifier-import:#c9d1d9;--color-prettylights-syntax-entity-tag:#7ee787;--color-prettylights-syntax-keyword:#ff7b72;--color-prettylights-syntax-string:#a5d6ff;--color-prettylights-syntax-variable:#ffa657;--color-prettylights-syntax-brackethighlighter-unmatched:#f85149;--color-prettylights-syntax-invalid-illegal-text:#f0f6fc;--color-prettylights-syntax-invalid-illegal-bg:#8e1519;--color-prettylights-syntax-carriage-return-text:#f0f6fc;--color-prettylights-syntax-carriage-return-bg:#b62324;--color-prettylights-syntax-string-regexp:#7ee787;--color-prettylights-syntax-markup-list:#f2cc60;--color-prettylights-syntax-markup-heading:#1f6feb;--color-prettylights-syntax-markup-italic:#c9d1d9;--color-prettylights-syntax-markup-bold:#c9d1d9;--color-prettylights-syntax-markup-deleted-text:#ffdcd7;--color-prettylights-syntax-markup-deleted-bg:#67060c;--color-prettylights-syntax-markup-inserted-text:#aff5b4;--color-prettylights-syntax-markup-inserted-bg:#033a16;--color-prettylights-syntax-markup-changed-text:#ffdfb6;--color-prettylights-syntax-markup-changed-bg:#5a1e02;--color-prettylights-syntax-markup-ignored-text:#c9d1d9;--color-prettylights-syntax-markup-ignored-bg:#1158c7;--color-prettylights-syntax-meta-diff-range:#d2a8ff;--color-prettylights-syntax-brackethighlighter-angle:#8b949e;--color-prettylights-syntax-sublimelinter-gutter-mark:#484f58;--color-prettylights-syntax-constant-other-reference-link:#a5d6ff;--color-fg-default:#c9d1d9;--color-fg-muted:#8b949e;--color-fg-subtle:#6e7681;--color-canvas-default:#0d1117;--color-canvas-subtle:#161b22;--color-border-default:#30363d;--color-border-muted:#21262d;--color-neutral-muted:rgba(110,118,129,0.4);--color-accent-fg:#58a6ff;--color-accent-emphasis:#1f6feb;--color-attention-subtle:rgba(187,128,9,0.15);--color-danger-fg:#f85149}}@media (prefers-color-scheme:light){.markdown-body{color-scheme:light;--color-prettylights-syntax-comment:#6e7781;--color-prettylights-syntax-constant:#0550ae;--color-prettylights-syntax-entity:#8250df;--color-prettylights-syntax-storage-modifier-import:#24292f;--color-prettylights-syntax-entity-tag:#116329;--color-prettylights-syntax-keyword:#cf222e;--color-prettylights-syntax-string:#0a3069;--color-prettylights-syntax-variable:#953800;--color-prettylights-syntax-brackethighlighter-unmatched:#82071e;--color-prettylights-syntax-invalid-illegal-text:#f6f8fa;--color-prettylights-syntax-invalid-illegal-bg:#82071e;--color-prettylights-syntax-carriage-return-text:#f6f8fa;--color-prettylights-syntax-carriage-return-bg:#cf222e;--color-prettylights-syntax-string-regexp:#116329;--color-prettylights-syntax-markup-list:#3b2300;--color-prettylights-syntax-markup-heading:#0550ae;--color-prettylights-syntax-markup-italic:#24292f;--color-prettylights-syntax-markup-bold:#24292f;--color-prettylights-syntax-markup-deleted-text:#82071e;--color-prettylights-syntax-markup-deleted-bg:#ffebe9;--color-prettylights-syntax-markup-inserted-text:#116329;--color-prettylights-syntax-markup-inserted-bg:#dafbe1;--color-prettylights-syntax-markup-changed-text:#953800;--color-prettylights-syntax-markup-changed-bg:#ffd8b5;--color-prettylights-syntax-markup-ignored-text:#eaeef2;--color-prettylights-syntax-markup-ignored-bg:#0550ae;--color-prettylights-syntax-meta-diff-range:#8250df;--color-prettylights-syntax-brackethighlighter-angle:#57606a;--color-prettylights-syntax-sublimelinter-gutter-mark:#8c959f;--color-prettylights-syntax-constant-other-reference-link:#0a3069;--color-fg-default:#24292f;--color-fg-muted:#57606a;--color-fg-subtle:#6e7781;--color-canvas-default:#ffffff;--color-canvas-subtle:#f6f8fa;--color-border-default:#d0d7de;--color-border-muted:hsla(210,18%,87%,1);--color-neutral-muted:rgba(175,184,193,0.2);--color-accent-fg:#0969da;--color-accent-emphasis:#0969da;--color-attention-subtle:#fff8c5;--color-danger-fg:#cf222e}}.markdown-body{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;margin:0;color:var(--color-fg-default);background-color:var(--color-canvas-default);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";font-size:16px;line-height:1.5;word-wrap:break-word}.markdown-body .octicon{display:inline-block;fill:currentColor;vertical-align:text-bottom}.markdown-body h1:hover .anchor .octicon-link:before,.markdown-body h2:hover .anchor .octicon-link:before,.markdown-body h3:hover .anchor .octicon-link:before,.markdown-body h4:hover .anchor .octicon-link:before,.markdown-body h5:hover .anchor .octicon-link:before,.markdown-body h6:hover .anchor .octicon-link:before{width:16px;height:16px;content:' ';display:inline-block;background-color:currentColor;-webkit-mask-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>");mask-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' version='1.1' aria-hidden='true'><path fill-rule='evenodd' d='M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z'></path></svg>")}.markdown-body details,.markdown-body figcaption,.markdown-body figure{display:block}.markdown-body summary{display:list-item}.markdown-body [hidden]{display:none!important}.markdown-body a{background-color:transparent;color:var(--color-accent-fg);text-decoration:none}.markdown-body abbr[title]{border-bottom:none;text-decoration:underline dotted}.markdown-body b,.markdown-body strong{font-weight:var(--base-text-weight-semibold,600)}.markdown-body dfn{font-style:italic}.markdown-body h1{margin:.67em 0;font-weight:var(--base-text-weight-semibold,600);padding-bottom:.3em;font-size:2em;border-bottom:1px solid var(--color-border-muted)}.markdown-body mark{background-color:var(--color-attention-subtle);color:var(--color-fg-default)}.markdown-body small{font-size:90%}.markdown-body sub,.markdown-body sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}.markdown-body sub{bottom:-.25em}.markdown-body sup{top:-.5em}.markdown-body img{border-style:none;max-width:100%;box-sizing:content-box;background-color:var(--color-canvas-default)}.markdown-body code,.markdown-body kbd,.markdown-body pre,.markdown-body samp{font-family:monospace;font-size:1em}.markdown-body figure{margin:1em 40px}.markdown-body hr{box-sizing:content-box;overflow:hidden;background:0 0;border-bottom:1px solid var(--color-border-muted);height:.25em;padding:0;margin:24px 0;background-color:var(--color-border-default);border:0}.markdown-body input{font:inherit;margin:0;overflow:visible;font-family:inherit;font-size:inherit;line-height:inherit}.markdown-body [type=button],.markdown-body [type=reset],.markdown-body [type=submit]{-webkit-appearance:button}.markdown-body [type=checkbox],.markdown-body [type=radio]{box-sizing:border-box;padding:0}.markdown-body [type=number]::-webkit-inner-spin-button,.markdown-body [type=number]::-webkit-outer-spin-button{height:auto}.markdown-body [type=search]::-webkit-search-cancel-button,.markdown-body [type=search]::-webkit-search-decoration{-webkit-appearance:none}.markdown-body ::-webkit-input-placeholder{color:inherit;opacity:.54}.markdown-body ::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}.markdown-body a:hover{text-decoration:underline}.markdown-body ::placeholder{color:var(--color-fg-subtle);opacity:1}.markdown-body hr::before{display:table;content:""}.markdown-body hr::after{display:table;clear:both;content:""}.markdown-body table{border-spacing:0;border-collapse:collapse;display:block;width:max-content;max-width:100%;overflow:auto}.markdown-body td,.markdown-body th{padding:0}.markdown-body details summary{cursor:pointer}.markdown-body details:not([open])>:not(summary){display:none!important}.markdown-body [role=button]:focus,.markdown-body a:focus,.markdown-body input[type=checkbox]:focus,.markdown-body input[type=radio]:focus{outline:2px solid var(--color-accent-fg);outline-offset:-2px;box-shadow:none}.markdown-body [role=button]:focus:not(:focus-visible),.markdown-body a:focus:not(:focus-visible),.markdown-body input[type=checkbox]:focus:not(:focus-visible),.markdown-body input[type=radio]:focus:not(:focus-visible){outline:solid 1px transparent}.markdown-body [role=button]:focus-visible,.markdown-body a:focus-visible,.markdown-body input[type=checkbox]:focus-visible,.markdown-body input[type=radio]:focus-visible{outline:2px solid var(--color-accent-fg);outline-offset:-2px;box-shadow:none}.markdown-body a:not([class]):focus,.markdown-body a:not([class]):focus-visible,.markdown-body input[type=checkbox]:focus,.markdown-body input[type=checkbox]:focus-visible,.markdown-body input[type=radio]:focus,.markdown-body input[type=radio]:focus-visible{outline-offset:0}.markdown-body kbd{display:inline-block;padding:3px 5px;font:11px ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;line-height:10px;color:var(--color-fg-default);vertical-align:middle;background-color:var(--color-canvas-subtle);border:solid 1px var(--color-neutral-muted);border-bottom-color:var(--color-neutral-muted);border-radius:6px;box-shadow:inset 0 -1px 0 var(--color-neutral-muted)}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{margin-top:24px;margin-bottom:16px;font-weight:var(--base-text-weight-semibold,600);line-height:1.25}.markdown-body h2{font-weight:var(--base-text-weight-semibold,600);padding-bottom:.3em;font-size:1.5em;border-bottom:1px solid var(--color-border-muted)}.markdown-body h3{font-weight:var(--base-text-weight-semibold,600);font-size:1.25em}.markdown-body h4{font-weight:var(--base-text-weight-semibold,600);font-size:1em}.markdown-body h5{font-weight:var(--base-text-weight-semibold,600);font-size:.875em}.markdown-body h6{font-weight:var(--base-text-weight-semibold,600);font-size:.85em;color:var(--color-fg-muted)}.markdown-body p{margin-top:0;margin-bottom:10px}.markdown-body blockquote{margin:0;padding:0 1em;color:var(--color-fg-muted);border-left:.25em solid var(--color-border-default)}.markdown-body ol,.markdown-body ul{margin-top:0;margin-bottom:0;padding-left:2em}.markdown-body ol ol,.markdown-body ul ol{list-style-type:lower-roman}.markdown-body ol ol ol,.markdown-body ol ul ol,.markdown-body ul ol ol,.markdown-body ul ul ol{list-style-type:lower-alpha}.markdown-body dd{margin-left:0}.markdown-body code,.markdown-body samp,.markdown-body tt{font-family:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;font-size:12px}.markdown-body pre{margin-top:0;margin-bottom:0;font-family:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;font-size:12px;word-wrap:normal}.markdown-body .octicon{display:inline-block;overflow:visible!important;vertical-align:text-bottom;fill:currentColor}.markdown-body input::-webkit-inner-spin-button,.markdown-body input::-webkit-outer-spin-button{margin:0;-webkit-appearance:none;appearance:none}.markdown-body::before{display:table;content:""}.markdown-body::after{display:table;clear:both;content:""}.markdown-body>:first-child{margin-top:0!important}.markdown-body>:last-child{margin-bottom:0!important}.markdown-body a:not([href]){color:inherit;text-decoration:none}.markdown-body .absent{color:var(--color-danger-fg)}.markdown-body .anchor{float:left;padding-right:4px;margin-left:-20px;line-height:1}.markdown-body .anchor:focus{outline:0}.markdown-body blockquote,.markdown-body details,.markdown-body dl,.markdown-body ol,.markdown-body p,.markdown-body pre,.markdown-body table,.markdown-body ul{margin-top:0;margin-bottom:16px}.markdown-body blockquote>:first-child{margin-top:0}.markdown-body blockquote>:last-child{margin-bottom:0}.markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link{color:var(--color-fg-default);vertical-align:middle;visibility:hidden}.markdown-body h1:hover .anchor,.markdown-body h2:hover .anchor,.markdown-body h3:hover .anchor,.markdown-body h4:hover .anchor,.markdown-body h5:hover .anchor,.markdown-body h6:hover .anchor{text-decoration:none}.markdown-body h1:hover .anchor .octicon-link,.markdown-body h2:hover .anchor .octicon-link,.markdown-body h3:hover .anchor .octicon-link,.markdown-body h4:hover .anchor .octicon-link,.markdown-body h5:hover .anchor .octicon-link,.markdown-body h6:hover .anchor .octicon-link{visibility:visible}.markdown-body h1 code,.markdown-body h1 tt,.markdown-body h2 code,.markdown-body h2 tt,.markdown-body h3 code,.markdown-body h3 tt,.markdown-body h4 code,.markdown-body h4 tt,.markdown-body h5 code,.markdown-body h5 tt,.markdown-body h6 code,.markdown-body h6 tt{padding:0 .2em;font-size:inherit}.markdown-body summary h1,.markdown-body summary h2,.markdown-body summary h3,.markdown-body summary h4,.markdown-body summary h5,.markdown-body summary h6{display:inline-block}.markdown-body summary h1 .anchor,.markdown-body summary h2 .anchor,.markdown-body summary h3 .anchor,.markdown-body summary h4 .anchor,.markdown-body summary h5 .anchor,.markdown-body summary h6 .anchor{margin-left:-40px}.markdown-body summary h1,.markdown-body summary h2{padding-bottom:0;border-bottom:0}.markdown-body ol.no-list,.markdown-body ul.no-list{padding:0;list-style-type:none}.markdown-body ol[type=a]{list-style-type:lower-alpha}.markdown-body ol[type=A]{list-style-type:upper-alpha}.markdown-body ol[type=i]{list-style-type:lower-roman}.markdown-body ol[type=I]{list-style-type:upper-roman}.markdown-body ol[type="1"]{list-style-type:decimal}.markdown-body div>ol:not([type]){list-style-type:decimal}.markdown-body ol ol,.markdown-body ol ul,.markdown-body ul ol,.markdown-body ul ul{margin-top:0;margin-bottom:0}.markdown-body li>p{margin-top:16px}.markdown-body li+li{margin-top:.25em}.markdown-body dl{padding:0}.markdown-body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:var(--base-text-weight-semibold,600)}.markdown-body dl dd{padding:0 16px;margin-bottom:16px}.markdown-body table th{font-weight:var(--base-text-weight-semibold,600)}.markdown-body table td,.markdown-body table th{padding:6px 13px;border:1px solid var(--color-border-default)}.markdown-body table tr{background-color:var(--color-canvas-default);border-top:1px solid var(--color-border-muted)}.markdown-body table tr:nth-child(2n){background-color:var(--color-canvas-subtle)}.markdown-body table img{background-color:transparent}.markdown-body img[align=right]{padding-left:20px}.markdown-body img[align=left]{padding-right:20px}.markdown-body .emoji{max-width:none;vertical-align:text-top;background-color:transparent}.markdown-body span.frame{display:block;overflow:hidden}.markdown-body span.frame>span{display:block;float:left;width:auto;padding:7px;margin:13px 0 0;overflow:hidden;border:1px solid var(--color-border-default)}.markdown-body span.frame span img{display:block;float:left}.markdown-body span.frame span span{display:block;padding:5px 0 0;clear:both;color:var(--color-fg-default)}.markdown-body span.align-center{display:block;overflow:hidden;clear:both}.markdown-body span.align-center>span{display:block;margin:13px auto 0;overflow:hidden;text-align:center}.markdown-body span.align-center span img{margin:0 auto;text-align:center}.markdown-body span.align-right{display:block;overflow:hidden;clear:both}.markdown-body span.align-right>span{display:block;margin:13px 0 0;overflow:hidden;text-align:right}.markdown-body span.align-right span img{margin:0;text-align:right}.markdown-body span.float-left{display:block;float:left;margin-right:13px;overflow:hidden}.markdown-body span.float-left span{margin:13px 0 0}.markdown-body span.float-right{display:block;float:right;margin-left:13px;overflow:hidden}.markdown-body span.float-right>span{display:block;margin:13px auto 0;overflow:hidden;text-align:right}.markdown-body code,.markdown-body tt{padding:.2em .4em;margin:0;font-size:85%;white-space:break-spaces;background-color:var(--color-neutral-muted);border-radius:6px}.markdown-body code br,.markdown-body tt br{display:none}.markdown-body del code{text-decoration:inherit}.markdown-body samp{font-size:85%}.markdown-body pre code{font-size:100%}.markdown-body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}.markdown-body .highlight{margin-bottom:16px}.markdown-body .highlight pre{margin-bottom:0;word-break:normal}.markdown-body .highlight pre,.markdown-body pre{padding:16px;overflow:auto;font-size:85%;line-height:1.45;background-color:var(--color-canvas-subtle);border-radius:6px}.markdown-body pre code,.markdown-body pre tt{display:inline;max-width:auto;padding:0;margin:0;overflow:visible;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}.markdown-body .csv-data td,.markdown-body .csv-data th{padding:5px;overflow:hidden;font-size:12px;line-height:1;text-align:left;white-space:nowrap}.markdown-body .csv-data .blob-num{padding:10px 8px 9px;text-align:right;background:var(--color-canvas-default);border:0}.markdown-body .csv-data tr{border-top:0}.markdown-body .csv-data th{font-weight:var(--base-text-weight-semibold,600);background:var(--color-canvas-subtle);border-top:0}.markdown-body [data-footnote-ref]::before{content:"["}.markdown-body [data-footnote-ref]::after{content:"]"}.markdown-body .footnotes{font-size:12px;color:var(--color-fg-muted);border-top:1px solid var(--color-border-default)}.markdown-body .footnotes ol{padding-left:16px}.markdown-body .footnotes ol ul{display:inline-block;padding-left:16px;margin-top:16px}.markdown-body .footnotes li{position:relative}.markdown-body .footnotes li:target::before{position:absolute;top:-8px;right:-8px;bottom:-8px;left:-24px;pointer-events:none;content:"";border:2px solid var(--color-accent-emphasis);border-radius:6px}.markdown-body .footnotes li:target{color:var(--color-fg-default)}.markdown-body .footnotes .data-footnote-backref g-emoji{font-family:monospace}.markdown-body .pl-c{color:var(--color-prettylights-syntax-comment)}.markdown-body .pl-c1,.markdown-body .pl-s .pl-v{color:var(--color-prettylights-syntax-constant)}.markdown-body .pl-e,.markdown-body .pl-en{color:var(--color-prettylights-syntax-entity)}.markdown-body .pl-s .pl-s1,.markdown-body .pl-smi{color:var(--color-prettylights-syntax-storage-modifier-import)}.markdown-body .pl-ent{color:var(--color-prettylights-syntax-entity-tag)}.markdown-body .pl-k{color:var(--color-prettylights-syntax-keyword)}.markdown-body .pl-pds,.markdown-body .pl-s,.markdown-body .pl-s .pl-pse .pl-s1,.markdown-body .pl-sr,.markdown-body .pl-sr .pl-cce,.markdown-body .pl-sr .pl-sra,.markdown-body .pl-sr .pl-sre{color:var(--color-prettylights-syntax-string)}.markdown-body .pl-smw,.markdown-body .pl-v{color:var(--color-prettylights-syntax-variable)}.markdown-body .pl-bu{color:var(--color-prettylights-syntax-brackethighlighter-unmatched)}.markdown-body .pl-ii{color:var(--color-prettylights-syntax-invalid-illegal-text);background-color:var(--color-prettylights-syntax-invalid-illegal-bg)}.markdown-body .pl-c2{color:var(--color-prettylights-syntax-carriage-return-text);background-color:var(--color-prettylights-syntax-carriage-return-bg)}.markdown-body .pl-sr .pl-cce{font-weight:700;color:var(--color-prettylights-syntax-string-regexp)}.markdown-body .pl-ml{color:var(--color-prettylights-syntax-markup-list)}.markdown-body .pl-mh,.markdown-body .pl-mh .pl-en,.markdown-body .pl-ms{font-weight:700;color:var(--color-prettylights-syntax-markup-heading)}.markdown-body .pl-mi{font-style:italic;color:var(--color-prettylights-syntax-markup-italic)}.markdown-body .pl-mb{font-weight:700;color:var(--color-prettylights-syntax-markup-bold)}.markdown-body .pl-md{color:var(--color-prettylights-syntax-markup-deleted-text);background-color:var(--color-prettylights-syntax-markup-deleted-bg)}.markdown-body .pl-mi1{color:var(--color-prettylights-syntax-markup-inserted-text);background-color:var(--color-prettylights-syntax-markup-inserted-bg)}.markdown-body .pl-mc{color:var(--color-prettylights-syntax-markup-changed-text);background-color:var(--color-prettylights-syntax-markup-changed-bg)}.markdown-body .pl-mi2{color:var(--color-prettylights-syntax-markup-ignored-text);background-color:var(--color-prettylights-syntax-markup-ignored-bg)}.markdown-body .pl-mdr{font-weight:700;color:var(--color-prettylights-syntax-meta-diff-range)}.markdown-body .pl-ba{color:var(--color-prettylights-syntax-brackethighlighter-angle)}.markdown-body .pl-sg{color:var(--color-prettylights-syntax-sublimelinter-gutter-mark)}.markdown-body .pl-corl{text-decoration:underline;color:var(--color-prettylights-syntax-constant-other-reference-link)}.markdown-body g-emoji{display:inline-block;min-width:1ch;font-family:"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";font-size:1em;font-style:normal!important;font-weight:var(--base-text-weight-normal,400);line-height:1;vertical-align:-.075em}.markdown-body g-emoji img{width:1em;height:1em}.markdown-body .task-list-item{list-style-type:none}.markdown-body .task-list-item label{font-weight:var(--base-text-weight-normal,400)}.markdown-body .task-list-item.enabled label{cursor:pointer}.markdown-body .task-list-item+.task-list-item{margin-top:4px}.markdown-body .task-list-item .handle{display:none}.markdown-body .task-list-item-checkbox{margin:0 .2em .25em -1.4em;vertical-align:middle}.markdown-body .contains-task-list:dir(rtl) .task-list-item-checkbox{margin:0 -1.6em .25em .2em}.markdown-body .contains-task-list{position:relative}.markdown-body .contains-task-list:focus-within .task-list-item-convert-container,.markdown-body .contains-task-list:hover .task-list-item-convert-container{display:block;width:auto;height:24px;overflow:visible;clip:auto}.markdown-body ::-webkit-calendar-picker-indicator{filter:invert(50%)}</style></head><body class="markdown-body" style="padding-left: 20px;padding-right: 20px;"><h1 id="voronoidiagram">VoronoiDiagram</h1>
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#%E7%B0%A1%E4%BB%8B">簡介</a></li>
-<li><a href="#%E8%BB%9F%E9%AB%94%E8%A6%8F%E6%A0%BC%E6%9B%B8">軟體規格書</a></li>
-<li><a href="#%E8%BB%9F%E9%AB%94%E8%AA%AA%E6%98%8E">軟體說明</a></li>
-<li><a href="#%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88">程式設計</a></li>
-<li><a href="#%E8%BB%9F%E9%AB%94%E6%B8%AC%E8%A9%A6%E8%88%87%E5%AF%A6%E9%A9%97%E7%B5%90%E6%9E%9C">軟體測試與實驗結果</a></li>
-<li><a href="#%E7%B5%90%E8%AB%96%E8%88%87%E5%BF%83%E5%BE%97">結論與心得</a></li>
-<li><a href="#%E9%99%84%E9%8C%84">附錄</a></li>
-</ul>
-<h2 id="簡介">簡介</h2>
-<ul>
-<li>作者：M143040074 資工碩一 李俊諺</li>
-<li>以 Windows 11, C++, Qt 6.10.0 框架實作 (Qt Creator 18.0.0 IDE)</li>
-<li>1~3 點作為 Base case，採用暴力法求解；4 點以上則採用 Divide and Conquer 演算法。</li>
-<li>能夠繪製 Voronoi diagram，並支援 Convex hull 的繪製。</li>
-<li>可以點擊 Run 直接顯示最終結果，也能以 Step by step，觀察每一步變化。</li>
-</ul>
-<h2 id="軟體規格書">軟體規格書</h2>
-<h3 id="輸入與輸出（資料）規格-">輸入與輸出（資料）規格 <a id="data-spec"></a></h3>
-<ul>
-<li>支援以下四種輸入方式:<ul>
-<li><strong>滑鼠互動</strong>：直接於畫布上點擊新增。</li>
-<li><strong>手動輸入</strong>：於右下角欄位輸入 (X, Y) 座標後點擊 Add 新增。</li>
-<li><strong>輸入格式檔 (.txt)</strong>：左上角 <code>menu: File -&gt; Read input text</code>，或是左上角 <code>toolbar: Open</code> (自動判斷輸入或輸出格式)。</li>
-<li><strong>輸出格式檔 (.txt)</strong>：左上角 <code>menu: File -&gt; Read output text</code>，或是左上角 <code>toolbar: Open</code> (自動判斷輸入或輸出格式)。</li>
-</ul>
-</li>
-<li>輸入格式檔：分為「含註解」與「不含註解」兩種格式，支援多筆測資，每筆測資第一行為點的數量 n，接下來 n 行為點的座標，檔案最後一行為 0 表示結束。<pre><code>#雙點測試
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voronoi Diagram — 演算法 Term Project 報告｜M143040074 李俊諺</title>
+<style>
+:root {
+  --paper: #fbfaf6;
+  --ink: #24221e;
+  --muted: #6f6a60;
+  --rule: #dcd6c8;
+  --accent: #b0392a;
+  --code: #f1eee6;
+  --sans: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", "Heiti TC", sans-serif;
+  --serif: Georgia, "Times New Roman", "PMingLiU", serif;
+  --mono: "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); }
+body { margin: 0; font: 16px/1.85 var(--sans); }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(176, 57, 42, .3); }
+a:hover { border-bottom-color: var(--accent); }
+
+/* Masthead */
+.masthead {
+  max-width: 1120px; margin: 0 auto; padding: 56px 40px 36px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 56px; align-items: end;
+  border-bottom: 3px double var(--ink);
+}
+.kicker { font-size: 13px; letter-spacing: .2em; color: var(--muted); margin: 0; }
+h1 { font-family: var(--serif); font-weight: normal; font-size: 58px; line-height: 1.05; margin: 14px 0 10px; letter-spacing: -.01em; }
+.subtitle { font-size: 19px; margin: 0 0 30px; }
+.meta { display: grid; grid-template-columns: max-content 1fr; gap: 2px 22px; margin: 0; font-size: 14.5px; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; }
+.cover { margin: 0; }
+.cover svg { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--rule); }
+.cover figcaption { margin-top: 8px; }
+
+/* Layout */
+.layout {
+  max-width: 1120px; margin: 0 auto; padding: 44px 40px 96px;
+  display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 64px;
+}
+nav.toc { position: sticky; top: 28px; align-self: start; max-height: calc(100vh - 56px); overflow: auto; font-size: 14px; line-height: 1.55; }
+nav.toc .toc-title { font-size: 12.5px; letter-spacing: .2em; color: var(--muted); margin: 0 0 10px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc > ol > li { margin-bottom: 7px; }
+nav.toc a { border: 0; color: var(--ink); display: grid; grid-template-columns: 26px 1fr; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .n { font-family: var(--serif); color: var(--accent); }
+nav.toc ol ol { margin-top: 2px; }
+nav.toc ol ol a { color: var(--muted); font-size: 13px; grid-template-columns: 34px 1fr; padding-left: 26px; }
+nav.toc ol ol .n { color: var(--muted); }
+main { max-width: 760px; min-width: 0; }
+
+/* Text */
+section { margin-bottom: 72px; }
+h2 { font-size: 26px; margin: 0 0 26px; padding-top: 14px; border-top: 1px solid var(--ink); display: flex; gap: 14px; align-items: baseline; }
+h2 .n { font-family: var(--serif); font-weight: normal; font-size: 30px; color: var(--accent); }
+h3 { font-size: 19px; margin: 44px 0 12px; display: flex; gap: 12px; align-items: baseline; }
+h3 .n { font-family: var(--serif); font-weight: normal; font-size: 17px; color: var(--accent); min-width: 2.2em; }
+p { margin: 0 0 14px; }
+ul, ol { margin: 0 0 16px; padding-left: 1.4em; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 4px 0 0; }
+strong { font-weight: 700; }
+code { font-family: var(--mono); font-size: .87em; background: var(--code); padding: 1px 5px; border-radius: 2px; }
+.menu { font-family: var(--mono); font-size: .87em; white-space: nowrap; }
+.lead { font-size: 17px; }
+
+/* Listings */
+.listing { margin: 22px 0 26px; }
+.listing figcaption { font-size: 12.5px; letter-spacing: .08em; color: var(--muted); margin: 0 0 6px; }
+.listing pre { margin: 0; padding: 14px 18px; background: var(--code); border-top: 2px solid var(--ink); font: 13.5px/1.65 var(--mono); overflow-x: auto; }
+.listing pre code { background: none; padding: 0; font-size: inherit; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 18px 0 26px; font-size: 15px; line-height: 1.7; }
+caption { caption-side: top; text-align: left; font-size: 13.5px; color: var(--muted); padding-bottom: 6px; }
+caption b { color: var(--ink); margin-right: 8px; }
+thead th { text-align: left; font-weight: 700; padding: 7px 14px 6px 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--ink); }
+td { padding: 7px 14px 7px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 2px solid var(--ink); }
+td.nowrap, th.nowrap { white-space: nowrap; }
+.cases a { margin-right: 9px; }
+.swatch { display: inline-block; width: 26px; border-top: 3px solid; vertical-align: middle; margin-right: 10px; }
+
+/* Figures */
+figure { margin: 26px 0; }
+figcaption { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+figcaption b { color: var(--ink); margin-right: 8px; }
+figure.shot img { display: block; max-width: 100%; height: auto; border: 1px solid var(--rule); background: #fff; }
+figure.shot figcaption { margin-top: 8px; }
+.plates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 24px; margin: 26px 0 10px; }
+.plates.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.plates figure { margin: 0; }
+.plates a { border: 0; display: block; }
+.plates img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: #fff; }
+.plates.three img { aspect-ratio: 1 / 1; object-fit: contain; }
+.plates figcaption { margin-top: 6px; }
+.plates-caption { font-size: 13.5px; color: var(--muted); margin: 6px 0 26px; }
+.plates-caption b { color: var(--ink); margin-right: 8px; }
+
+/* Notes */
+.note { border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin: 22px 0; }
+.note .label { display: block; font-size: 12.5px; letter-spacing: .15em; color: var(--accent); }
+
+footer { max-width: 1120px; margin: 0 auto; padding: 18px 40px 40px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
+
+@media (max-width: 960px) {
+  .masthead { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 36px 22px 28px; }
+  .cover { max-width: 320px; }
+  h1 { font-size: 44px; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px 22px 72px; }
+  table { display: block; overflow-x: auto; }
+  .menu { white-space: normal; }
+  nav.toc { position: static; max-height: none; border-bottom: 1px solid var(--rule); padding-bottom: 18px; }
+  nav.toc ol ol { display: none; }
+  .plates.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  footer { padding: 18px 22px 32px; }
+}
+@media print {
+  html { background: #fff; }
+  nav.toc { display: none; }
+  .layout { display: block; padding-top: 24px; }
+  main { max-width: none; }
+  section { break-inside: auto; }
+  figure, table, .listing { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <p class="kicker">演算法設計與分析　TERM PROJECT</p>
+    <h1>Voronoi Diagram</h1>
+    <p class="subtitle">以課本 divide-and-conquer 演算法實作的 Voronoi diagram 繪製程式</p>
+    <dl class="meta">
+      <dt>系級</dt><dd>資工碩一</dd>
+      <dt>姓名</dt><dd>李俊諺 Jun-Yan Li</dd>
+      <dt>學號</dt><dd>M143040074</dd>
+      <dt>實作</dt><dd>C++17、Qt 6.10（Qt Widgets）、Windows 11</dd>
+    </dl>
+  </div>
+  <figure class="cover">
+    <svg viewBox="0 0 610 610" role="img" aria-label="52 點的 Voronoi diagram"><g stroke="#b0392a" stroke-width="1.3" stroke-linecap="round"><line x1="0" y1="31" x2="43" y2="11"/><line x1="0" y1="76" x2="29" y2="76"/><line x1="0" y1="216" x2="59" y2="170"/><line x1="0" y1="285" x2="94" y2="274"/><line x1="0" y1="333" x2="33" y2="360"/><line x1="0" y1="492" x2="72" y2="439"/><line x1="0" y1="508" x2="29" y2="526"/><line x1="0" y1="570" x2="29" y2="526"/><line x1="0" y1="580" x2="6" y2="581"/><line x1="6" y1="581" x2="17" y2="596"/><line x1="6" y1="581" x2="28" y2="574"/><line x1="12" y1="610" x2="17" y2="596"/><line x1="17" y1="596" x2="37" y2="610"/><line x1="28" y1="574" x2="41" y2="595"/><line x1="28" y1="574" x2="56" y2="540"/><line x1="29" y1="76" x2="31" y2="75"/><line x1="29" y1="76" x2="59" y2="170"/><line x1="29" y1="526" x2="52" y2="533"/><line x1="31" y1="75" x2="43" y2="11"/><line x1="31" y1="75" x2="47" y2="74"/><line x1="33" y1="360" x2="72" y2="438"/><line x1="33" y1="360" x2="160" y2="360"/><line x1="37" y1="610" x2="41" y2="595"/><line x1="41" y1="595" x2="96" y2="565"/><line x1="43" y1="11" x2="55" y2="0"/><line x1="47" y1="74" x2="72" y2="63"/><line x1="47" y1="74" x2="76" y2="116"/><line x1="52" y1="533" x2="56" y2="540"/><line x1="52" y1="533" x2="69" y2="486"/><line x1="56" y1="540" x2="96" y2="565"/><line x1="59" y1="170" x2="74" y2="163"/><line x1="62" y1="0" x2="72" y2="63"/><line x1="69" y1="486" x2="74" y2="455"/><line x1="69" y1="486" x2="125" y2="531"/><line x1="72" y1="63" x2="90" y2="72"/><line x1="72" y1="438" x2="72" y2="439"/><line x1="72" y1="438" x2="161" y2="441"/><line x1="72" y1="439" x2="74" y2="455"/><line x1="74" y1="163" x2="76" y2="116"/><line x1="74" y1="163" x2="163" y2="155"/><line x1="74" y1="455" x2="124" y2="505"/><line x1="76" y1="116" x2="90" y2="72"/><line x1="90" y1="72" x2="188" y2="53"/><line x1="94" y1="274" x2="183" y2="185"/><line x1="94" y1="274" x2="205" y2="316"/><line x1="96" y1="565" x2="134" y2="580"/><line x1="124" y1="505" x2="125" y2="531"/><line x1="124" y1="505" x2="165" y2="444"/><line x1="125" y1="531" x2="134" y2="580"/><line x1="134" y1="580" x2="165" y2="610"/><line x1="160" y1="360" x2="161" y2="441"/><line x1="160" y1="360" x2="205" y2="316"/><line x1="161" y1="441" x2="165" y2="444"/><line x1="163" y1="155" x2="183" y2="185"/><line x1="163" y1="155" x2="188" y2="53"/><line x1="165" y1="444" x2="222" y2="472"/><line x1="183" y1="185" x2="237" y2="229"/><line x1="188" y1="53" x2="192" y2="47"/><line x1="192" y1="47" x2="200" y2="30"/><line x1="192" y1="47" x2="291" y2="189"/><line x1="200" y1="0" x2="200" y2="30"/><line x1="200" y1="30" x2="208" y2="35"/><line x1="205" y1="316" x2="214" y2="313"/><line x1="208" y1="35" x2="300" y2="147"/><line x1="208" y1="35" x2="348" y2="91"/><line x1="214" y1="313" x2="237" y2="229"/><line x1="214" y1="313" x2="279" y2="380"/><line x1="217" y1="610" x2="231" y2="579"/><line x1="222" y1="472" x2="231" y2="579"/><line x1="222" y1="472" x2="264" y2="426"/><line x1="231" y1="579" x2="347" y2="527"/><line x1="237" y1="229" x2="246" y2="226"/><line x1="246" y1="226" x2="289" y2="204"/><line x1="246" y1="226" x2="356" y2="336"/><line x1="264" y1="426" x2="279" y2="380"/><line x1="264" y1="426" x2="352" y2="493"/><line x1="279" y1="380" x2="354" y2="363"/><line x1="289" y1="204" x2="291" y2="189"/><line x1="289" y1="204" x2="331" y2="214"/><line x1="291" y1="189" x2="300" y2="147"/><line x1="300" y1="147" x2="348" y2="91"/><line x1="331" y1="214" x2="336" y2="216"/><line x1="331" y1="214" x2="377" y2="116"/><line x1="336" y1="216" x2="376" y2="256"/><line x1="336" y1="216" x2="408" y2="161"/><line x1="347" y1="527" x2="352" y2="493"/><line x1="347" y1="527" x2="378" y2="548"/><line x1="348" y1="91" x2="365" y2="84"/><line x1="352" y1="493" x2="424" y2="404"/><line x1="354" y1="363" x2="356" y2="336"/><line x1="354" y1="363" x2="424" y2="404"/><line x1="356" y1="336" x2="376" y2="256"/><line x1="365" y1="84" x2="377" y2="116"/><line x1="365" y1="84" x2="398" y2="38"/><line x1="376" y1="256" x2="419" y2="250"/><line x1="377" y1="116" x2="408" y2="161"/><line x1="378" y1="548" x2="412" y2="610"/><line x1="378" y1="548" x2="528" y2="449"/><line x1="391" y1="0" x2="398" y2="38"/><line x1="398" y1="38" x2="446" y2="65"/><line x1="408" y1="161" x2="452" y2="173"/><line x1="419" y1="250" x2="452" y2="173"/><line x1="419" y1="250" x2="491" y2="303"/><line x1="424" y1="404" x2="481" y2="407"/><line x1="446" y1="65" x2="475" y2="162"/><line x1="446" y1="65" x2="528" y2="48"/><line x1="452" y1="173" x2="475" y2="162"/><line x1="475" y1="162" x2="483" y2="164"/><line x1="481" y1="407" x2="491" y2="303"/><line x1="481" y1="407" x2="528" y2="449"/><line x1="483" y1="164" x2="532" y2="186"/><line x1="483" y1="164" x2="535" y2="55"/><line x1="491" y1="303" x2="519" y2="274"/><line x1="502" y1="610" x2="552" y2="464"/><line x1="519" y1="274" x2="532" y2="186"/><line x1="519" y1="274" x2="610" y2="289"/><line x1="528" y1="48" x2="532" y2="0"/><line x1="528" y1="48" x2="535" y2="55"/><line x1="528" y1="449" x2="552" y2="464"/><line x1="532" y1="186" x2="610" y2="154"/><line x1="535" y1="55" x2="581" y2="84"/><line x1="552" y1="464" x2="610" y2="457"/><line x1="581" y1="84" x2="593" y2="0"/><line x1="581" y1="84" x2="610" y2="109"/><line x1="599" y1="610" x2="610" y2="599"/></g><g fill="#24221e"><circle cx="3" cy="550" r="2.6"/><circle cx="5" cy="5" r="2.6"/><circle cx="10" cy="605" r="2.6"/><circle cx="12" cy="456" r="2.6"/><circle cx="17" cy="608" r="2.6"/><circle cx="18" cy="560" r="2.6"/><circle cx="22" cy="108" r="2.6"/><circle cx="23" cy="45" r="2.6"/><circle cx="28" cy="592" r="2.6"/><circle cx="38" cy="492" r="2.6"/><circle cx="45" cy="582" r="2.6"/><circle cx="50" cy="50" r="2.6"/><circle cx="54" cy="98" r="2.6"/><circle cx="55" cy="600" r="2.6"/><circle cx="67" cy="89" r="2.6"/><circle cx="89" cy="44" r="2.6"/><circle cx="90" cy="512" r="2.6"/><circle cx="99" cy="501" r="2.6"/><circle cx="100" cy="100" r="2.6"/><circle cx="111" cy="222" r="2.6"/><circle cx="120" cy="480" r="2.6"/><circle cx="123" cy="321" r="2.6"/><circle cx="123" cy="400" r="2.6"/><circle cx="147" cy="258" r="2.6"/><circle cx="150" cy="500" r="2.6"/><circle cx="199" cy="399" r="2.6"/><circle cx="246" cy="135" r="2.6"/><circle cx="256" cy="128" r="2.6"/><circle cx="290" cy="100" r="2.6"/><circle cx="299" cy="488" r="2.6"/><circle cx="300" cy="300" r="2.6"/><circle cx="312" cy="45" r="2.6"/><circle cx="320" cy="280" r="2.6"/><circle cx="333" cy="444" r="2.6"/><circle cx="345" cy="590" r="2.6"/><circle cx="350" cy="150" r="2.6"/><circle cx="369" cy="159" r="2.6"/><circle cx="400" cy="200" r="2.6"/><circle cx="405" cy="502" r="2.6"/><circle cx="415" cy="305" r="2.6"/><circle cx="421" cy="123" r="2.6"/><circle cx="432" cy="543" r="2.6"/><circle cx="470" cy="230" r="2.6"/><circle cx="482" cy="12" r="2.6"/><circle cx="500" cy="100" r="2.6"/><circle cx="523" cy="111" r="2.6"/><circle cx="567" cy="321" r="2.6"/><circle cx="579" cy="246" r="2.6"/><circle cx="580" cy="20" r="2.6"/><circle cx="600" cy="600" r="2.6"/><circle cx="601" cy="23" r="2.6"/><circle cx="609" cy="609" r="2.6"/></g></svg>
+    <figcaption>52 點測資的執行結果，依本程式的輸出檔繪製</figcaption>
+  </figure>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="目錄">
+  <p class="toc-title">目錄</p>
+  <ol>
+    <li><a href="#intro"><span class="n">1</span>簡介</a></li>
+    <li><a href="#spec"><span class="n">2</span>軟體規格書</a>
+      <ol>
+        <li><a href="#spec-io"><span class="n">2.1</span>輸入與輸出規格</a></li>
+        <li><a href="#spec-ui"><span class="n">2.2</span>功能與介面規格</a></li>
+        <li><a href="#spec-test"><span class="n">2.3</span>軟體測試規劃書</a></li>
+      </ol>
+    </li>
+    <li><a href="#guide"><span class="n">3</span>軟體說明</a>
+      <ol>
+        <li><a href="#install"><span class="n">3.1</span>安裝說明</a></li>
+        <li><a href="#build"><span class="n">3.2</span>編譯說明</a></li>
+        <li><a href="#usage"><span class="n">3.3</span>使用說明</a></li>
+      </ol>
+    </li>
+    <li><a href="#design"><span class="n">4</span>程式設計</a>
+      <ol>
+        <li><a href="#data"><span class="n">4.1</span>資料結構</a></li>
+        <li><a href="#coords"><span class="n">4.2</span>座標系與前處理</a></li>
+        <li><a href="#base"><span class="n">4.3</span>三點以下與共線</a></li>
+        <li><a href="#dc"><span class="n">4.4</span>Divide and conquer</a></li>
+        <li><a href="#hull"><span class="n">4.5</span>合併凸包</a></li>
+        <li><a href="#hyperplane"><span class="n">4.6</span>Hyperplane</a></li>
+        <li><a href="#trim"><span class="n">4.7</span>消線</a></li>
+        <li><a href="#steps"><span class="n">4.8</span>Step by step</a></li>
+      </ol>
+    </li>
+    <li><a href="#results"><span class="n">5</span>軟體測試與實驗結果</a>
+      <ol>
+        <li><a href="#env"><span class="n">5.1</span>測試環境</a></li>
+        <li><a href="#testfiles"><span class="n">5.2</span>測試輸入與輸出檔</a></li>
+        <li><a href="#gallery"><span class="n">5.3</span>實驗結果</a></li>
+        <li><a href="#discussion"><span class="n">5.4</span>結果說明</a></li>
+      </ol>
+    </li>
+    <li><a href="#conclusion"><span class="n">6</span>結論與心得</a></li>
+    <li><a href="#appendix"><span class="n">7</span>附錄</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="intro">
+  <h2><span class="n">1</span>簡介</h2>
+  <p class="lead">本程式以 C++ 與 Qt 框架實作課本的 Voronoi diagram 演算法：1 到 3 點作為 base case，以暴力法直接求解；4 點以上採用 divide and conquer，遞迴求出左右兩半的 Voronoi diagram 後再 merge。</p>
+  <ul>
+    <li>以 Windows 11、C++、Qt 6.10.0 框架實作（Qt Creator 18.0.0 IDE）。</li>
+    <li>能夠繪製 Voronoi diagram，並支援 convex hull 的繪製。</li>
+    <li>可以點擊 Run 直接顯示最終結果，也能以 Step by step 觀察每一步的變化。</li>
+  </ul>
+</section>
+
+<section id="spec">
+  <h2><span class="n">2</span>軟體規格書</h2>
+
+  <h3 id="spec-io"><span class="n">2.1</span>輸入與輸出（資料）規格</h3>
+  <table>
+    <caption><b>表 1</b>輸入方式</caption>
+    <thead><tr><th class="nowrap">方式</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">滑鼠點選</td><td>直接於畫布上點擊新增點，座標四捨五入為整數。</td></tr>
+      <tr><td class="nowrap">手動輸入</td><td>於右下角欄位輸入 (X, Y) 座標（範圍 0 ~ 610）後點擊 Add。</td></tr>
+      <tr><td class="nowrap">輸入格式檔</td><td><span class="menu">File → Read input text</span>，或工具列 <span class="menu">Open</span>（自動判斷輸入或輸出格式）。</td></tr>
+      <tr><td class="nowrap">輸出格式檔</td><td><span class="menu">File → Read output text</span>，或工具列 <span class="menu">Open</span>，讀入後直接顯示圖形。</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>輸入格式檔</strong>分為「含註解」與「不含註解」兩種，可包含多筆測資。每筆測資第一行為點的數量 n，接下來 n 行為點的座標（以空白或 Tab 分隔），檔案最後一行為 0 表示結束；<code>#</code> 之後的內容為註解。每讀入一筆測資，程式會畫出結果並顯示讀入的點數與座標，按下 OK 後再讀下一筆；讀到 0 時顯示「讀入點數為零，檔案測試停止」。</p>
+  <figure class="listing">
+    <figcaption>輸入格式檔範例</figcaption>
+<pre><code>#雙點測試
 2
 200 200
 200 200
-0
-</code></pre>
-</li>
-<li>輸出格式檔：前半段為點座標，後半段為線段座標，均以 <strong>lexical order</strong> 排序，即先排序 x 座標，若相同則排序 y 座標。<pre><code>P 103 200 
+0</code></pre>
+  </figure>
+
+  <p><strong>輸出格式檔</strong>前半段為點座標（<code>P x y</code>），後半段為線段座標（<code>E x1 y1 x2 y2</code>），兩者皆依 lexical order 排序：先比較 x 座標，相同時再比較 y 座標。線段的起點與終點滿足 x1 &lt; x2，或 x1 = x2 且 y1 ≤ y2。射線只計算到畫布邊界（座標範圍 [0, 610]），座標以整數表示（無條件捨去），重複的點只輸出一次。存檔方式為 <span class="menu">File → Save</span> 或工具列 <span class="menu">Save</span>。</p>
+  <figure class="listing">
+    <figcaption>輸出格式檔範例</figcaption>
+<pre><code>P 103 200
 P 193 64
 P 193 370
 P 283 200
 E 0 34 193 161
 E 0 363 193 261
 E 193 161 193 261
-E 193 161 437 0 
-E 193 261 600 476
-</code></pre>
-</li>
-<li>輸出儲存格式如上面所述，方式有：<ul>
-<li>左上角 <code>menu: File -&gt; Save</code></li>
-<li>左上角 <code>toolbar: Save</code></li>
-</ul>
-</li>
-</ul>
-<h3 id="功能規格與介面規格">功能規格與介面規格</h3>
-<p><img src="img/UI.png" alt="UI"></p>
-<ul>
-<li>畫布大小：610 x 610</li>
-<li>左上角 menu:<ul>
-<li><code>File: Read input text, Read output text, Save</code></li>
-<li><code>Execute: Step, Run, Clear</code></li>
-</ul>
-</li>
-<li>左上角 toolbar: <code>Open, Save, Step, Run, Clear</code></li>
-<li>右上角 point list: 顯示畫布上的所有點座標。</li>
-<li>右下角 Add Point: (X, Y) 點座標，Add 新增點。</li>
-<li>右下角 Pos: 即時顯示滑鼠在畫布上的位置。</li>
-<li>藍色線條：Convex hull；紅色線條：Voronoi edges。</li>
-</ul>
-<h3 id="軟體測試規劃書">軟體測試規劃書</h3>
-<ul>
-<li>期中目標：三個點 (含) 以下:<ul>
-<li>一個點：不須做任何動作。</li>
-<li>兩個點：找兩點中垂線。</li>
-<li>三個點：先找三點 (三角形) 外心，從外心出發往三邊法向量方向畫射線。</li>
-</ul>
-</li>
-<li>期末目標：四個點以上，divide 成左右兩半，遞迴分割 (Recursively divide) 直到點數縮減為可使用暴力解的 1~3 點，再將左右兩半的解 merge，最終 merge 成原本的解。</li>
-</ul>
-<h2 id="軟體說明">軟體說明</h2>
-<h3 id="安裝說明">安裝說明</h3>
-<ul>
-<li>軟體執行檔在 exe 資料夾中：<code>VoronoiDiagram.exe</code>，同個資料夾下的 <code>Qt6Core.dll</code>, <code>Qt6Gui.dll</code>, <code>Qt6Widgets.dll</code> 與 <code>platforms</code> 資料夾為軟體執行之必要條件。</li>
-</ul>
-<h3 id="使用說明">使用說明</h3>
-<ul>
-<li>以任一種 <a href="#data-spec">輸入方式</a>，例如直接任意在畫布上點擊四個點，點擊紅框的 Step，觀察每一步變化，共有 <strong>7 個 step</strong>。</li>
-</ul>
-<p><img src="img/step.png" alt="step"></p>
-<ul>
-<li>Step 1: 畫左半 Voronoi edges</li>
-</ul>
-<p><img src="img/step1.png" alt="step1"></p>
-<ul>
-<li>Step 2: 畫右半 Voronoi edges</li>
-</ul>
-<p><img src="img/step2.png" alt="step2"></p>
-<ul>
-<li>Step 3: 畫左半 convex hull</li>
-</ul>
-<p><img src="img/step3.png" alt="step3"></p>
-<ul>
-<li>Step 4: 畫右半 convex hull</li>
-</ul>
-<p><img src="img/step4.png" alt="step4"></p>
-<ul>
-<li>Step 5: 畫 merge 左右兩半後的 convex hull</li>
-</ul>
-<p><img src="img/step5.png" alt="step5"></p>
-<ul>
-<li>Step 6: 畫 hyperplane</li>
-</ul>
-<p><img src="img/step6.png" alt="step6"></p>
-<ul>
-<li>Step 7: 最終結果</li>
-</ul>
-<p><img src="img/step7.png" alt="step7"></p>
-<h2 id="程式設計">程式設計</h2>
-<h3 id="資料結構">資料結構</h3>
-<ul>
-<li>點與線分別採用 Qt 框架中的 <code>QPointF</code> 與 <code>QLineF</code> 類別實作。</li>
-</ul>
-<pre><code>#include &lt;QPointF&gt;
-#include &lt;QLineF&gt;
-</code></pre>
-<ul>
-<li>自定義資料結構:</li>
-</ul>
+E 193 161 437 0
+E 193 261 610 481</code></pre>
+  </figure>
+
+  <h3 id="spec-ui"><span class="n">2.2</span>功能規格與介面規格</h3>
+  <figure class="shot">
+    <img src="img/UI.png" alt="程式介面：左側為畫布，右側為點座標列表與 Add Point 欄位" width="834" height="731">
+    <figcaption><b>圖 1</b>程式介面</figcaption>
+  </figure>
+  <table>
+    <caption><b>表 2</b>介面元件</caption>
+    <thead><tr><th class="nowrap">位置</th><th class="nowrap">元件</th><th>功能</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">左側</td><td class="nowrap">畫布</td><td>610 × 610，固定大小，左上角為原點 (0, 0)。</td></tr>
+      <tr><td class="nowrap">左上</td><td class="nowrap">選單</td><td><span class="menu">File</span>：Read input text、Read output text、Save<br><span class="menu">Execute</span>：Step、Run、Clear</td></tr>
+      <tr><td class="nowrap">左上</td><td class="nowrap">工具列</td><td>Open、Save、Step、Run、Clear</td></tr>
+      <tr><td class="nowrap">右上</td><td class="nowrap">點座標列表</td><td>顯示畫布上所有點的座標。</td></tr>
+      <tr><td class="nowrap">右下</td><td class="nowrap">Add Point</td><td>輸入 (X, Y) 座標後按 Add 新增點。</td></tr>
+      <tr><td class="nowrap">右下</td><td class="nowrap">Pos</td><td>即時顯示滑鼠在畫布上的位置。</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <caption><b>表 3</b>線條顏色</caption>
+    <thead><tr><th>顏色</th><th>意義</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap"><span class="swatch" style="border-color:#ff0000"></span>紅</td><td>Voronoi edges（最終結果）</td></tr>
+      <tr><td class="nowrap"><span class="swatch" style="border-color:#00ffff"></span>青</td><td>Convex hull</td></tr>
+      <tr><td class="nowrap"><span class="swatch" style="border-color:#0000ff"></span>藍</td><td>Step by step：左半 Voronoi diagram</td></tr>
+      <tr><td class="nowrap"><span class="swatch" style="border-color:#00ff00"></span>綠</td><td>Step by step：右半 Voronoi diagram</td></tr>
+      <tr><td class="nowrap"><span class="swatch" style="border-color:#ff00ff"></span>洋紅</td><td>Step by step：hyperplane</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="spec-test"><span class="n">2.3</span>軟體測試規劃書</h3>
+  <p><strong>期中目標</strong>：三個點（含）以下。</p>
+  <ul>
+    <li>一個點：不須做任何動作。</li>
+    <li>兩個點：找兩點中垂線。</li>
+    <li>三個點：先找三點（三角形）外心，從外心出發往三邊法向量方向畫射線。</li>
+  </ul>
+  <p><strong>期末目標</strong>：四個點以上，divide 成左右兩半，遞迴分割直到點數縮減為可使用暴力解的 1 ~ 3 點，再將左右兩半的解 merge，最終 merge 成原本的解。</p>
+</section>
+
+<section id="guide">
+  <h2><span class="n">3</span>軟體說明</h2>
+
+  <h3 id="install"><span class="n">3.1</span>安裝說明</h3>
+  <p>執行檔位於 <code>exe</code> 資料夾：<code>VoronoiDiagram.exe</code>，不需安裝，直接執行即可。執行檔需與下列檔案放在同一個資料夾（exe 資料夾中皆已附上，請勿移除）。已在 PATH 中不含 Qt 與 MinGW 的環境下測試，可正常開啟。</p>
+  <table>
+    <caption><b>表 4</b>執行所需檔案</caption>
+    <thead><tr><th class="nowrap">類別</th><th>檔案</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">Qt 函式庫</td><td><code>Qt6Core.dll</code>　<code>Qt6Gui.dll</code>　<code>Qt6Widgets.dll</code></td></tr>
+      <tr><td class="nowrap">MinGW 執行環境</td><td><code>libgcc_s_seh-1.dll</code>　<code>libstdc++-6.dll</code>　<code>libwinpthread-1.dll</code></td></tr>
+      <tr><td class="nowrap">Qt 外掛</td><td><code>platforms/qwindows.dll</code>（必要）　<code>styles/qmodernwindowsstyle.dll</code>（視窗樣式）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="build"><span class="n">3.2</span>編譯說明</h3>
+  <p>編譯環境為 Qt 6.10（MinGW 64-bit）、C++17、qmake，本機以 Qt 6.10.1 與 MinGW GCC 13.1.0 驗證。</p>
+  <p><strong>方法一：Qt Creator。</strong>開啟專案檔 <code>VoronoiDiagram.pro</code>，選擇 Kit <code>Desktop Qt 6.10.1 MinGW 64-bit</code>，左下角切換為 Release 後按 Build，再按 Run。</p>
+  <p><strong>方法二：命令列。</strong>在 cmd 中執行以下指令（Qt 的安裝路徑請依實際情況修改），完成後執行檔位於 <code>build-release\release\VoronoiDiagram.exe</code>。</p>
+  <figure class="listing">
+    <figcaption>編譯指令（cmd）</figcaption>
+<pre><code>set PATH=C:\Qt\6.10.1\mingw_64\bin;C:\Qt\Tools\mingw1310_64\bin;%PATH%
+mkdir build-release
+cd build-release
+qmake ..\VoronoiDiagram.pro CONFIG+=release
+mingw32-make</code></pre>
+  </figure>
+  <p>打包時，在同一個 cmd 視窗執行以下指令，會將執行所需的 DLL 與外掛複製到執行檔旁；或依表 4 手動複製所需檔案。</p>
+  <figure class="listing">
+    <figcaption>打包指令（cmd）</figcaption>
+<pre><code>windeployqt --release --no-translations release\VoronoiDiagram.exe</code></pre>
+  </figure>
+
+  <h3 id="usage"><span class="n">3.3</span>使用說明</h3>
+  <p>以任一種輸入方式（表 1）加入點，例如直接在畫布上任意點擊四個點，再點擊工具列上紅框標示的 Step，即可逐步觀察 merge 的過程，每次 merge 共有 7 個 step；點擊 Run 則直接畫出最終結果。</p>
+  <figure class="shot">
+    <img src="img/step.png" alt="工具列上的 Step 按鈕以紅框標示" width="835" height="729">
+    <figcaption><b>圖 2</b>Step 按鈕位置</figcaption>
+  </figure>
+  <div class="plates">
+    <figure><a href="img/step1.png"><img src="img/step1.png" alt="Step 1" loading="lazy"></a><figcaption><b>圖 3</b>Step 1　畫左半 Voronoi edges</figcaption></figure>
+    <figure><a href="img/step2.png"><img src="img/step2.png" alt="Step 2" loading="lazy"></a><figcaption><b>圖 4</b>Step 2　畫右半 Voronoi edges</figcaption></figure>
+    <figure><a href="img/step3.png"><img src="img/step3.png" alt="Step 3" loading="lazy"></a><figcaption><b>圖 5</b>Step 3　畫左半 convex hull</figcaption></figure>
+    <figure><a href="img/step4.png"><img src="img/step4.png" alt="Step 4" loading="lazy"></a><figcaption><b>圖 6</b>Step 4　畫右半 convex hull</figcaption></figure>
+    <figure><a href="img/step5.png"><img src="img/step5.png" alt="Step 5" loading="lazy"></a><figcaption><b>圖 7</b>Step 5　畫 merge 左右兩半後的 convex hull</figcaption></figure>
+    <figure><a href="img/step6.png"><img src="img/step6.png" alt="Step 6" loading="lazy"></a><figcaption><b>圖 8</b>Step 6　畫 hyperplane</figcaption></figure>
+    <figure><a href="img/step7.png"><img src="img/step7.png" alt="Step 7" loading="lazy"></a><figcaption><b>圖 9</b>Step 7　消線，最終結果</figcaption></figure>
+  </div>
+</section>
+
+<section id="design">
+  <h2><span class="n">4</span>程式設計</h2>
+
+  <h3 id="data"><span class="n">4.1</span>資料結構</h3>
+  <p>點與線分別採用 Qt 框架中的 <code>QPointF</code> 與 <code>QLineF</code> 類別，另外自訂以下資料結構。</p>
+  <figure class="listing">
+    <figcaption>include/VoronoiDiagram.h（節錄）</figcaption>
 <pre><code>// 儲存結果
 struct VoronoiResult {
     QVector&lt;QLineF&gt; edges; // Voronoi edges
@@ -145,34 +362,42 @@ struct VoronoiStep {
 class PointKey {
 public:
     QPointF p;
-    PointKey(QPointF _p) : p(_p) {}
+    double r; // Distance from a Voronoi vertex to its generating points
+    PointKey(QPointF _p, double _r = 0) : p(_p), r(_r) {}
     bool operator&lt;(const PointKey&amp; other) const;
-};
-</code></pre>
-<h3 id="演算法">演算法</h3>
-<ul>
-<li>左上角為原點 <code>(0, 0)</code>，往右為 <code>+x</code> 軸方向，往下為 <code>+y</code> 軸方向。</li>
-<li>一開始先將點以 <strong>lexical order</strong> 排序，並將重複的點移除。</li>
-<li>以向量 (射線) 來處理線段，若向量方向 <strong>往右</strong>，則法向量方向 <strong>往上</strong>。</li>
-</ul>
-<h4 id="三點以下與共線">三點以下與共線</h4>
-<ul>
-<li><strong>兩點</strong>：視為共線。</li>
-<li><strong>共線</strong>：各相鄰兩點畫中垂線。</li>
-<li><strong>三點</strong>：先求三點 (三角形) 之外心，以外心為起點，向三個邊的法向量方向畫射線。要注意的是，例如下圖，若判斷邊的法向量方向 (紅實線)，與中點往第三點的方向 (藍實線) 同方向 (<strong>dotProduct &gt; 0</strong>)，則射線方向要改為反方向 (紅虛線)。</li>
-</ul>
-<p><img src="img/triangle.png" alt="triangle"></p>
-<h4 id="四點以上">四點以上</h4>
-<ul>
-<li>Divide and conquer</li>
-</ul>
+};</code></pre>
+  </figure>
+  <p><code>PointKey</code> 的 <code>r</code> 為 Voronoi 頂點到其生成點的距離。左右兩個 Voronoi diagram 可能在同一個位置各有一個頂點，但位於不同的圓上（例如網格），需以「位置 + <code>r</code>」才能區分。</p>
+
+  <h3 id="coords"><span class="n">4.2</span>座標系與前處理</h3>
+  <ul>
+    <li>左上角為原點 (0, 0)，往右為 +x 軸方向，往下為 +y 軸方向。</li>
+    <li>一開始先將點以 lexical order 排序，並將重複的點移除。</li>
+    <li>以向量（射線）來處理線段，若向量方向往右，則法向量方向往上。</li>
+    <li>射線以「單位方向 × 極大長度（<code>FAR = 1e10</code>）」表示延伸到無限遠，座標超過 <code>FAR / 2</code> 的端點視為無限遠端點；繪圖與存檔時再裁切到畫布範圍。</li>
+  </ul>
+
+  <h3 id="base"><span class="n">4.3</span>三點以下與共線</h3>
+  <ul>
+    <li><strong>兩點</strong>：視為共線。</li>
+    <li><strong>共線</strong>：各相鄰兩點畫中垂線。遞迴過程中的子問題若所有點共線（例如網格中同一行的點），也直接以此方式求解，不進行 merge。</li>
+    <li><strong>三點</strong>：先求三點（三角形）之外心，以外心為起點，向三個邊的法向量方向畫射線。若邊的法向量方向（圖 10 紅實線）與中點往第三點的方向（藍實線）相同（dotProduct &gt; 0），射線方向要改為反方向（紅虛線）。</li>
+  </ul>
+  <figure class="shot">
+    <img src="img/triangle.png" alt="三角形外心與射線方向的判斷" loading="lazy">
+    <figcaption><b>圖 10</b>三點時射線方向的判斷</figcaption>
+  </figure>
+
+  <h3 id="dc"><span class="n">4.4</span>四點以上：Divide and conquer</h3>
+  <figure class="listing">
+    <figcaption>src/VoronoiDiagram.cpp（節錄）</figcaption>
 <pre><code>VoronoiResult VoronoiDiagram::divideAndConquer(const QVector&lt;QPointF&gt;&amp; points) {
     VoronoiResult res;
     int n = points.size();
 
     if (n == 1)
         res.convexHull.append(points[0]);
-    else if (n == 2)
+    else if (n == 2 || areAllCollinear(points)) // Collinear sub-problems are solved directly
         res = solveCollinear(points);
     else if (n == 3)
         res = voronoi3(points);
@@ -186,194 +411,165 @@ public:
         res = merge(leftRes, rightRes);
     }
     return res;
-}
-</code></pre>
-<ul>
-<li><strong>Base case</strong>: 三點以下直接暴力解。</li>
-<li>四點以上需 divide 為左右兩半，分別求出左右兩半的 Voronoi diagram 後，再做 merge。</li>
-<li><strong>Divide</strong>: 先將 x 座標排序，切成左右各一半的點。</li>
-<li><strong>Merge</strong> 是最困難的部分，主要分成三個步驟:</li>
-</ul>
-<ol>
-<li>找左右 convex hull 的上、下切線，並 merge 左右 convex hull: <a href="https://www.naukri.com/code360/library/solving-the-convex-hull-problem-using-divide-and-conquer-algorithm">source</a></li>
-</ol>
-<p><img src="img/merge_convex_hull.png" alt="merge_convex_hull"></p>
-<ul>
-<li>先找左凸包最右點，右凸包最左點，連線如上圖 L1。</li>
-<li>接著找上 (下) 切線，若穿過左右凸包，則需移動端點，移動方法為：左凸包逆 (順) 時針移動，右凸包順 (逆) 時針移動。</li>
-<li>判斷穿過凸包：利用 cross product 判斷方向性：根據右手定則，結果 <strong>&gt; 0 表示順時針旋轉，&lt; 0 表示逆時針旋轉</strong>。<ul>
-<li>標準的 cross product 為三維的運算，結果為一向量，但可將二維的 z 分量視為 0 來運算，結果只有 z 分量不為 0，可視為一 <strong>純量</strong>。</li>
-<li>例如 oa 向量 = (x1, y1), ob 向量 = (x2, y2)，cross product = x1y2 - y1x2。</li>
-<li>注意此座標系與笛卡兒座標系不同，其 +x 軸方向往右，+y 軸方向往下。</li>
-<li><blockquote>
-<p>0 (&lt; 0): 拇指的方向垂直進入 (出來) xy 平面，其餘四指順 (逆) 時針旋轉</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li>例如找上切線 T1：<ul>
-<li>L1 穿過 <strong>右</strong> 凸包 (<strong>cross product &lt; 0</strong>)，右凸包 <strong>順</strong> 時針移動，得到 L2。</li>
-<li>L2 穿過 <strong>左</strong> 凸包 (<strong>cross product &gt; 0</strong>)，左凸包 <strong>逆</strong> 時針移動，得到 L3。</li>
-<li>L3 穿過 <strong>右</strong> 凸包 (<strong>cross product &lt; 0</strong>)，右凸包 <strong>順</strong> 時針移動，得到 L4。</li>
-<li>L4 穿過 <strong>左</strong> 凸包 (<strong>cross product &gt; 0</strong>)，左凸包 <strong>逆</strong> 時針移動，得到 T1。</li>
-</ul>
-</li>
-<li>得到上下切線後，以 <strong>逆時針</strong> 開始收集所有端點，從左凸包上切點 (U) 到左凸包下切點 (P)，從右凸包下切點 (Q) 到右凸包上切點 (S)，最後得到 <code>U, V, W, P, Q, R, S</code> 為 merge 後的所有端點。</li>
-</ul>
-<ol start="2">
-<li>找 hyperplane</li>
-</ol>
-<ul>
-<li>hyperplane 是由多段 L 與 R 的垂直平分線所組成的折線。</li>
-</ul>
-<pre><code>從 upper tangent 開始
+}</code></pre>
+  </figure>
+  <ul>
+    <li><strong>Base case</strong>：三點以下直接暴力解。</li>
+    <li><strong>Divide</strong>：點已依 x 座標排序，切成左右各一半的點，分別遞迴求出左右兩半的 Voronoi diagram。</li>
+    <li><strong>Merge</strong> 是最困難的部分，分成合併凸包、找 hyperplane、消線三個步驟（4.5 ~ 4.7）。</li>
+  </ul>
+
+  <h3 id="hull"><span class="n">4.5</span>Merge 一：合併凸包</h3>
+  <p>找出左右 convex hull 的上、下切線，並 merge 左右 convex hull（參考 <a href="https://www.naukri.com/code360/library/solving-the-convex-hull-problem-using-divide-and-conquer-algorithm">Solving the convex hull problem using divide and conquer</a>）。</p>
+  <figure class="shot">
+    <img src="img/merge_convex_hull.png" alt="以上下切線合併左右凸包" loading="lazy">
+    <figcaption><b>圖 11</b>合併左右凸包</figcaption>
+  </figure>
+  <ul>
+    <li>先找左凸包最右點、右凸包最左點，連線如圖 11 的 L1。若有多個點 x 座標相同，左凸包取 y 最大、右凸包取 y 最小的點（即 lexical order 的最後一點與第一點），以免選到共線邊上外側的點。</li>
+    <li>接著找上（下）切線：若連線穿過左右凸包，則需移動端點，左凸包逆（順）時針移動，右凸包順（逆）時針移動。</li>
+    <li>以 cross product 判斷是否穿過凸包。二維的 cross product 可將 z 分量視為 0 計算，結果只有 z 分量，可視為一純量：oa = (x1, y1)、ob = (x2, y2) 時，cross product = x1y2 − y1x2。注意此座標系的 +y 軸往下，與笛卡兒座標系不同；依右手定則，結果 &gt; 0（&lt; 0）時拇指垂直進入（出來）xy 平面，其餘四指為順（逆）時針旋轉。</li>
+    <li>以找上切線 T1 為例：L1 穿過右凸包（cross product &lt; 0），右凸包順時針移動得到 L2；L2 穿過左凸包（cross product &gt; 0），左凸包逆時針移動得到 L3；依此類推，L4 再移動後得到 T1。</li>
+    <li>得到上下切線後，以逆時針方向收集端點：從左凸包上切點 (U) 到左凸包下切點 (P)，再從右凸包下切點 (Q) 到右凸包上切點 (S)，得到 U, V, W, P, Q, R, S 為 merge 後的所有端點。</li>
+  </ul>
+
+  <h3 id="hyperplane"><span class="n">4.6</span>Merge 二：Hyperplane</h3>
+  <p>Hyperplane 是由多段 L 與 R 的垂直平分線所組成的折線。</p>
+  <figure class="listing">
+    <figcaption>找 hyperplane 的流程</figcaption>
+<pre><code>從 upper tangent 的 (L, R) 開始，hyperplane 從無限遠處往下走
 ↓
 計算目前左右點 (L, R) 的垂直平分線
 ↓
-找此平分線最先與哪一條 Voronoi edge 相交
+找此平分線往下最先與 L 或 R 區域的哪些 Voronoi edge 相交
+(交點 = L、R 與該邊另一個生成點的外心)
 ↓
-與左側邊相交 → 更新 L
-與右側邊相交 → 更新 R
+沒有交點 → 剩下的平分線為射向無限遠的射線，結束
+有交點   → 同一個交點上的所有邊一起處理，決定下一組 (L, R)
 ↓
-重複此步驟直到抵達 lower tangent
-</code></pre>
-<ol start="3">
-<li>消線 (修剪、移除多餘邊)</li>
-</ol>
-<ul>
-<li>與找 hyperplane 一起進行，若撞到左邊：取出被撞到的左 Voronoi 邊 e，比較 e.p1 與 e.p2 到 L 的距離，保留較近的一端，將另一端更新為交點 (hitPoint)，以裁切超出範圍的線段。</li>
-<li>此外需移除 <strong>dangling edges</strong>，即完全未與 hyperplane 相交的邊，這些邊是多餘的。</li>
-</ul>
-<h3 id="step-by-step">Step by step</h3>
-<ul>
-<li>分為 7 個步驟逐步呈現:</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">Step</th>
-<th align="left">動作</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">1</td>
-<td align="left">畫左 Voronoi</td>
-</tr>
-<tr>
-<td align="center">2</td>
-<td align="left">畫右 Voronoi</td>
-</tr>
-<tr>
-<td align="center">3</td>
-<td align="left">畫左 convex hull</td>
-</tr>
-<tr>
-<td align="center">4</td>
-<td align="left">畫右 convex hull</td>
-</tr>
-<tr>
-<td align="center">5</td>
-<td align="left">畫 merged convex hull</td>
-</tr>
-<tr>
-<td align="center">6</td>
-<td align="left">畫 hyperplane</td>
-</tr>
-<tr>
-<td align="center">7</td>
-<td align="left">消線，最終結果</td>
-</tr>
-</tbody></table>
-<h2 id="軟體測試與實驗結果">軟體測試與實驗結果</h2>
-<h3 id="測試環境">測試環境</h3>
-<ul>
-<li>Processor: Intel(R) Core(TM) i5-14500 (2.60 GHz)</li>
-<li>Installed RAM: 8.00 GB (7.64 GB usable)</li>
-<li>System type: 64-bit operating system, x64-based processor</li>
-<li>Edition: Windows 11 Education</li>
-<li>Version: 25H2</li>
-<li>IDE: Qt Creator 18.0.0</li>
-<li>Framework: Qt 6.10.0</li>
-<li>Programming language: C++</li>
-<li>Compiler: GCC 13.1.0 (64-bit)</li>
-</ul>
-<h3 id="實驗結果">實驗結果</h3>
-<ul>
-<li>2 點</li>
-</ul>
-<p><img src="img/2p.png" alt="2p"></p>
-<ul>
-<li>3 點</li>
-</ul>
-<p><img src="img/3p-1.png" alt="3p-1">
-<img src="img/3p-2.png" alt="3p-2">
-<img src="img/3p-3.png" alt="3p-3">
-<img src="img/3p-4.png" alt="3p-4"></p>
-<ul>
-<li>4 點</li>
-</ul>
-<p><img src="img/4p-1.png" alt="4p-1">
-<img src="img/4p-2.png" alt="4p-2">
-<img src="img/4p-3.png" alt="4p-3"></p>
-<ul>
-<li>5 點</li>
-</ul>
-<p><img src="img/5p.png" alt="5p"></p>
-<ul>
-<li>6 點</li>
-</ul>
-<p><img src="img/6p.png" alt="6p"></p>
-<ul>
-<li>12 點</li>
-</ul>
-<p><img src="img/12p.png" alt="12p"></p>
-<ul>
-<li>15 點</li>
-</ul>
-<p><img src="img/15p.png" alt="15p"></p>
-<ul>
-<li>52 點</li>
-</ul>
-<p><img src="img/52p.png" alt="52p"></p>
-<ul>
-<li>77 點 (失敗)</li>
-</ul>
-<p><img src="img/77p.png" alt="77p"></p>
-<ul>
-<li>92 點</li>
-</ul>
-<p><img src="img/92p.png" alt="92p"></p>
-<ul>
-<li>150 點 (失敗)</li>
-</ul>
-<p><img src="img/150p.png" alt="150p"></p>
-<ul>
-<li>200 點 (失敗)</li>
-</ul>
-<p><img src="img/200p.png" alt="200p"></p>
-<ul>
-<li>測資的部分在 <a href="#%E9%99%84%E9%8C%84">附錄</a> 可以找到。</li>
-<li>4 點以上的情況，有些會有未能正確移除的線段，推測可能是在建構 hyperplane 與執行消線的同步過程中，邏輯判斷出錯。由於此過程我認為是演算法中最困難的部分，因此還未能找出異常發生的確切原因及解決方案。</li>
-</ul>
-<h2 id="結論與心得">結論與心得</h2>
-<ul>
-<li>在選擇 GUI 框架時，曾評估功能強大但體積較大的 Qt，以及輕量級的像 FLTK。經過嘗試後發現 FLTK 在圖形功能的實現很複雜，且實作後的繪圖效果不如 Qt，最終選擇了能讓我專注於 Voronoi diagram 演算法實作的 Qt 框架。</li>
-<li>Qt 的開發體驗相當便利，內建的圖形資料結構（如 <code>QPointF, QLineF</code>）可直接應用。此外，僅需一行程式碼 <code>painter.setRenderHint(QPainter::Antialiasing);</code> 即可實現反鋸齒效果，<code>Slots and Signals</code> 的機制也讓互動設計更直覺。</li>
-<li>在 Voronoi diagram 實作方面，雖然理論上能理解講義中的演算法，但將其轉化為程式碼時，發現許多細節處理比想像中複雜，因此在實作過程中耗費了許多時間進行除錯與邏輯驗證。</li>
-<li>目前在 4 點以上的情況，偶爾會出現線段未能正確移除的問題。推測錯誤可能發生在 Hyperplane 建構與消線的邏輯判斷上。由於這部分是此演算法中最困難的步驟，目前尚未完全排除該錯誤，期望未來能修正此部分。</li>
-</ul>
-<h2 id="附錄">附錄</h2>
-<ul>
-<li><a href="https://github.com/jyli0828/VoronoiDiagram">source code in github</a></li>
-<li><a href="M143040074.txt">程式原始碼合併檔</a></li>
-<li>測資<ul>
-<li><a href="testcase/2~3point.txt">2 ~ 3 個點</a></li>
-<li><a href="testcase/4~15point.txt">4 ~ 15 個點</a></li>
-<li><a href="testcase/output.txt">輸出格式</a></li>
-<li><a href="testcase/52,77,92,150,200.txt">52, 77, 92, 150, 200 個點</a></li>
-<li><a href="testcase/collinear.txt">特例：共線</a></li>
-<li><a href="testcase/pointGenerator.py">隨機生成 n 個點座標</a></li>
-</ul>
-</li>
-</ul>
-<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({ showProcessingMessages: false, messageStyle: "none",  extensions: ["tex2jax.js"],jax: ["input/TeX", "output/HTML-CSS"], tex2jax: { inlineMath:  [ ["$", "$"] ],  displayMath: [ ["$$","$$"] ],skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a']}, "HTML-CSS": { availableFonts: ["STIX","TeX"], showMathMenu: false  }});</script></body></html>
+重複此步驟</code></pre>
+  </figure>
+  <ul>
+    <li>一般情況：與左側邊相交 → 更新 L；與右側邊相交 → 更新 R；同時與左右側邊相交 → 兩者都更新。</li>
+    <li>四點以上共圓（例如網格）時，同一個交點會撞到多條邊。此時所有生成點都在以交點為圓心的同一個圓上，從進入的 hyperplane 開始往 L 的方向量角度，依序為 L、…、新 L、新 R、…、R，因此新 L 取左側生成點中角度最大者，新 R 取右側生成點中角度最小者。</li>
+  </ul>
+
+  <h3 id="trim"><span class="n">4.7</span>Merge 三：消線</h3>
+  <ul>
+    <li>與找 hyperplane 一起進行：在交點處，進入與離開的 hyperplane 把平面分成兩側（靠 L 的為左側）。被撞到的左 Voronoi 邊只保留在左側的部分、右 Voronoi 邊只保留在右側的部分，另一端更新為交點；若整條邊都在錯誤的一側則直接移除。</li>
+    <li>此外需移除 dangling edges，即完全未與 hyperplane 相交、位於錯誤一側的邊：反覆移除「有一端為非無限遠、且度數 ≤ 1 的頂點」的邊。頂點以「位置 + 到生成點的距離 <code>r</code>」辨識（見 4.1）。</li>
+  </ul>
+
+  <h3 id="steps"><span class="n">4.8</span>Step by step</h3>
+  <p>每次 merge 分為 7 個步驟逐步呈現，每按一次 Step 前進一步。</p>
+  <table>
+    <caption><b>表 5</b>Step by step 的步驟</caption>
+    <thead><tr><th class="nowrap">Step</th><th>動作</th><th>顏色</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>畫左半 Voronoi diagram</td><td class="nowrap"><span class="swatch" style="border-color:#0000ff"></span>藍</td></tr>
+      <tr><td>2</td><td>畫右半 Voronoi diagram</td><td class="nowrap"><span class="swatch" style="border-color:#00ff00"></span>綠</td></tr>
+      <tr><td>3</td><td>畫左半 convex hull</td><td class="nowrap"><span class="swatch" style="border-color:#00ffff"></span>青</td></tr>
+      <tr><td>4</td><td>畫右半 convex hull</td><td class="nowrap"><span class="swatch" style="border-color:#00ffff"></span>青</td></tr>
+      <tr><td>5</td><td>畫 merge 後的 convex hull</td><td class="nowrap"><span class="swatch" style="border-color:#00ffff"></span>青</td></tr>
+      <tr><td>6</td><td>畫 hyperplane</td><td class="nowrap"><span class="swatch" style="border-color:#ff00ff"></span>洋紅</td></tr>
+      <tr><td>7</td><td>消線，最終結果</td><td class="nowrap"><span class="swatch" style="border-color:#ff0000"></span>紅</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="results">
+  <h2><span class="n">5</span>軟體測試與實驗結果</h2>
+
+  <h3 id="env"><span class="n">5.1</span>測試環境</h3>
+  <table>
+    <caption><b>表 6</b>測試環境</caption>
+    <tbody>
+      <tr><td class="nowrap">處理器</td><td>Intel(R) Core(TM) i5-14500（2.60 GHz）</td></tr>
+      <tr><td class="nowrap">記憶體</td><td>8.00 GB（7.64 GB 可用）</td></tr>
+      <tr><td class="nowrap">作業系統</td><td>Windows 11 Education 25H2，64 位元，x64 處理器</td></tr>
+      <tr><td class="nowrap">開發工具</td><td>Qt Creator 18.0.0</td></tr>
+      <tr><td class="nowrap">框架</td><td>Qt 6.10.0</td></tr>
+      <tr><td class="nowrap">語言</td><td>C++</td></tr>
+      <tr><td class="nowrap">編譯器</td><td>GCC 13.1.0（64-bit）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="testfiles"><span class="n">5.2</span>測試輸入檔與輸出檔</h3>
+  <p>每個輸入檔包含多筆測資，每筆測資各有一個以 Save 功能產生的輸出檔，檔名為「輸入檔名_第幾筆測資」。</p>
+  <table>
+    <caption><b>表 7</b>測試資料</caption>
+    <thead><tr><th class="nowrap">測試輸入檔</th><th>內容</th><th>測試輸出檔</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap"><a href="testcase/2~3point.txt">2~3point.txt</a></td><td>2 ~ 3 點，9 筆</td>
+        <td class="cases"><a href="testcase/output/2~3point_1.txt">1</a><a href="testcase/output/2~3point_2.txt">2</a><a href="testcase/output/2~3point_3.txt">3</a><a href="testcase/output/2~3point_4.txt">4</a><a href="testcase/output/2~3point_5.txt">5</a><a href="testcase/output/2~3point_6.txt">6</a><a href="testcase/output/2~3point_7.txt">7</a><a href="testcase/output/2~3point_8.txt">8</a><a href="testcase/output/2~3point_9.txt">9</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/4~15point.txt">4~15point.txt</a></td><td>4 ~ 15 點，11 筆</td>
+        <td class="cases"><a href="testcase/output/4~15point_1.txt">1</a><a href="testcase/output/4~15point_2.txt">2</a><a href="testcase/output/4~15point_3.txt">3</a><a href="testcase/output/4~15point_4.txt">4</a><a href="testcase/output/4~15point_5.txt">5</a><a href="testcase/output/4~15point_6.txt">6</a><a href="testcase/output/4~15point_7.txt">7</a><a href="testcase/output/4~15point_8.txt">8</a><a href="testcase/output/4~15point_9.txt">9</a><a href="testcase/output/4~15point_10.txt">10</a><a href="testcase/output/4~15point_11.txt">11</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/52,77,92,150,200.txt">52,77,92,150,200.txt</a></td><td>52、77、92、150、200 點</td>
+        <td class="cases"><a href="testcase/output/52,77,92,150,200_1.txt">52</a><a href="testcase/output/52,77,92,150,200_2.txt">77</a><a href="testcase/output/52,77,92,150,200_3.txt">92</a><a href="testcase/output/52,77,92,150,200_4.txt">150</a><a href="testcase/output/52,77,92,150,200_5.txt">200</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/collinear.txt">collinear.txt</a></td><td>特例：共線，6 筆</td>
+        <td class="cases"><a href="testcase/output/collinear_1.txt">1</a><a href="testcase/output/collinear_2.txt">2</a><a href="testcase/output/collinear_3.txt">3</a><a href="testcase/output/collinear_4.txt">4</a><a href="testcase/output/collinear_5.txt">5</a><a href="testcase/output/collinear_6.txt">6</a></td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="gallery"><span class="n">5.3</span>實驗結果</h3>
+  <p>以下為各點數的執行結果，點擊圖片可檢視原尺寸。</p>
+  <div class="plates three">
+    <figure><a href="img/2p.png"><img src="img/2p.png" alt="2 點的結果" loading="lazy"></a><figcaption>(a) 2 點</figcaption></figure>
+    <figure><a href="img/3p-1.png"><img src="img/3p-1.png" alt="3 點的結果之一" loading="lazy"></a><figcaption>(b) 3 點之一</figcaption></figure>
+    <figure><a href="img/3p-2.png"><img src="img/3p-2.png" alt="3 點的結果之二" loading="lazy"></a><figcaption>(c) 3 點之二</figcaption></figure>
+    <figure><a href="img/3p-3.png"><img src="img/3p-3.png" alt="3 點的結果之三" loading="lazy"></a><figcaption>(d) 3 點之三</figcaption></figure>
+    <figure><a href="img/3p-4.png"><img src="img/3p-4.png" alt="3 點的結果之四" loading="lazy"></a><figcaption>(e) 3 點之四</figcaption></figure>
+    <figure><a href="img/4p-1.png"><img src="img/4p-1.png" alt="4 點的結果之一" loading="lazy"></a><figcaption>(f) 4 點之一</figcaption></figure>
+    <figure><a href="img/4p-2.png"><img src="img/4p-2.png" alt="4 點的結果之二" loading="lazy"></a><figcaption>(g) 4 點之二</figcaption></figure>
+    <figure><a href="img/4p-3.png"><img src="img/4p-3.png" alt="4 點的結果之三" loading="lazy"></a><figcaption>(h) 4 點之三</figcaption></figure>
+    <figure><a href="img/5p.png"><img src="img/5p.png" alt="5 點的結果" loading="lazy"></a><figcaption>(i) 5 點</figcaption></figure>
+    <figure><a href="img/6p.png"><img src="img/6p.png" alt="6 點的結果" loading="lazy"></a><figcaption>(j) 6 點</figcaption></figure>
+    <figure><a href="img/12p.png"><img src="img/12p.png" alt="12 點的結果" loading="lazy"></a><figcaption>(k) 12 點</figcaption></figure>
+    <figure><a href="img/15p.png"><img src="img/15p.png" alt="15 點的結果" loading="lazy"></a><figcaption>(l) 15 點</figcaption></figure>
+    <figure><a href="img/52p.png"><img src="img/52p.png" alt="52 點的結果" loading="lazy"></a><figcaption>(m) 52 點</figcaption></figure>
+    <figure><a href="img/77p.png"><img src="img/77p.png" alt="77 點的結果" loading="lazy"></a><figcaption>(n) 77 點</figcaption></figure>
+    <figure><a href="img/92p.png"><img src="img/92p.png" alt="92 點的結果" loading="lazy"></a><figcaption>(o) 92 點</figcaption></figure>
+    <figure><a href="img/150p.png"><img src="img/150p.png" alt="150 點的結果" loading="lazy"></a><figcaption>(p) 150 點</figcaption></figure>
+    <figure><a href="img/200p.png"><img src="img/200p.png" alt="200 點的結果" loading="lazy"></a><figcaption>(q) 200 點</figcaption></figure>
+    <figure><a href="img/grid-121p.png"><img src="img/grid-121p.png" alt="11 × 11 網格的結果" loading="lazy"></a><figcaption>(r) 特例：11 × 11 網格（121 點）</figcaption></figure>
+  </div>
+  <p class="plates-caption"><b>圖 12</b>各點數的執行結果</p>
+
+  <h3 id="discussion"><span class="n">5.4</span>結果說明</h3>
+  <p>所有測資（含特例：共線、網格）皆可正確執行。</p>
+  <p>原先 77、150、200 點會有未能正確移除的線段，原因是原本以座標 ±1600 判斷無限遠端點，但三點接近共線時，外心可能遠超過此範圍，被誤判為無限遠端點而無法消線。另外也修正了共線的子問題、hyperplane 找不到交點、四點共圓（網格）等特殊情況，修正方式見第 4 節。</p>
+  <div class="note">
+    <span class="label">已知限制</span>
+    浮點數誤差容許值為 <code>1e-6</code>，距離小於此值的交點視為同一點；Voronoi 頂點座標需小於 <code>FAR / 2 = 5e9</code>，否則會被誤判為無限遠端點。輸入點在畫布範圍 [0, 610] 內時不會發生，因此手動輸入的座標限制在此範圍。
+  </div>
+</section>
+
+<section id="conclusion">
+  <h2><span class="n">6</span>結論與心得</h2>
+  <p>在選擇 GUI 框架時，曾評估功能強大但體積較大的 Qt，以及輕量級的像 FLTK。經過嘗試後發現 FLTK 在圖形功能的實現很複雜，且實作後的繪圖效果不如 Qt，最終選擇了能讓我專注於 Voronoi diagram 演算法實作的 Qt 框架。</p>
+  <p>Qt 的開發體驗相當便利，內建的圖形資料結構（如 <code>QPointF</code>、<code>QLineF</code>）可直接應用。此外，僅需一行程式碼 <code>painter.setRenderHint(QPainter::Antialiasing);</code> 即可實現反鋸齒效果，Slots and Signals 的機制也讓互動設計更直覺。</p>
+  <p>在 Voronoi diagram 實作方面，雖然理論上能理解講義中的演算法，但將其轉化為程式碼時，發現許多細節處理比想像中複雜，因此在實作過程中耗費了許多時間進行除錯與邏輯驗證。</p>
+  <p>原先在 4 點以上的情況，偶爾會出現線段未能正確移除的問題，已找出原因並修正（見 5.4），目前所有測資與特例皆可正確執行。</p>
+</section>
+
+<section id="appendix">
+  <h2><span class="n">7</span>附錄</h2>
+  <table>
+    <thead><tr><th class="nowrap">項目</th><th>連結</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">程式原始碼合併檔</td><td><a href="M143040074.txt">M143040074.txt</a></td></tr>
+      <tr><td class="nowrap">原始碼（GitHub）</td><td><a href="https://github.com/jyli0828/VoronoiDiagram">github.com/jyli0828/VoronoiDiagram</a></td></tr>
+      <tr><td class="nowrap">測試輸入檔</td><td><a href="testcase/2~3point.txt">2~3point.txt</a>、<a href="testcase/4~15point.txt">4~15point.txt</a>、<a href="testcase/52,77,92,150,200.txt">52,77,92,150,200.txt</a>、<a href="testcase/collinear.txt">collinear.txt</a></td></tr>
+      <tr><td class="nowrap">測試輸出檔</td><td>見表 7；輸出格式範例：<a href="testcase/output.txt">output.txt</a></td></tr>
+      <tr><td class="nowrap">隨機測資產生器</td><td><a href="testcase/pointGenerator.py">pointGenerator.py</a>（隨機生成 n 個點座標）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+</div>
+
+<footer>M143040074　李俊諺　演算法設計與分析 Term Project　Voronoi Diagram</footer>
+
+</body>
+</html>
