@@ -480,51 +480,52 @@ QVector<QPointF> VoronoiDiagram::mergeConvexHull(const QVector<QPointF>& left, c
 }
 
 void VoronoiDiagram::eliminateEdges(VoronoiResult& res) {
-    bool changed = true;
+    // A vertex is identified by its position and its distance to the generating points, so that
+    // a vertex of the left diagram and one of the right diagram at the same position are not mixed up
+    auto vertexKey = [&](const QPointF& p, int edgeIdx) {
+        return PointKey(p, QLineF(p, res.endPoints[edgeIdx].first).length());
+    };
 
-    // Loop until no more edges are removed (deleting one edge might make another dangling)
-    while (changed) {
-        changed = false;
+    // 1. Edges incident to each internal (not boundary) vertex
+    QMap<PointKey, QVector<int>> incident;
+    for (int i = 0; i < res.edges.size(); ++i) {
+        if (!isBoundaryPoint(res.edges[i].p1())) incident[vertexKey(res.edges[i].p1(), i)].append(i);
+        if (!isBoundaryPoint(res.edges[i].p2())) incident[vertexKey(res.edges[i].p2(), i)].append(i);
+    }
 
-        // 1. Build Degree Map (Count connections for each vertex)
-        // A vertex is identified by its position and its distance to the generating points, so that
-        // a vertex of the left diagram and one of the right diagram at the same position are not mixed up
-        auto vertexKey = [&](const QPointF& p, int edgeIdx) {
-            return PointKey(p, QLineF(p, res.endPoints[edgeIdx].first).length());
-        };
-        QMap<PointKey, int> degree;
-        for (int i = 0; i < res.edges.size(); ++i) {
-            degree[vertexKey(res.edges[i].p1(), i)]++;
-            degree[vertexKey(res.edges[i].p2(), i)]++;
-        }
+    // 2. Remove the edge at each vertex of degree 1 (Dangling). Removing an edge lowers the degree
+    //    of the vertex at its other end, which may become dangling too, so each edge is visited once
+    QMap<PointKey, int> degree;
+    QVector<PointKey> dangling;
+    for (auto it = incident.cbegin(); it != incident.cend(); ++it) {
+        degree[it.key()] = it.value().size();
+        if (it.value().size() <= 1) dangling.append(it.key());
+    }
 
-        QVector<QLineF> validEdges;
-        QVector<QPair<QPointF, QPointF>> validEndPoints;
-
-        // 2. Check and Filter
-        for (int i = 0; i < res.edges.size(); ++i) {
-            const QLineF& e = res.edges[i];
-            bool remove = false;
-
-            // Check P1: If internal (not boundary) and has degree <= 1 -> Dangling
-            if (!isBoundaryPoint(e.p1()) && degree[vertexKey(e.p1(), i)] <= 1)
-                remove = true;
-            // Check P2
-            else if (!isBoundaryPoint(e.p2()) && degree[vertexKey(e.p2(), i)] <= 1)
-                remove = true;
-
-            if (remove)
-                changed = true; // Mark as changed to trigger another pass
-            else {
-                validEdges.append(e);
-                validEndPoints.append(res.endPoints[i]);
+    QVector<bool> removed(res.edges.size(), false);
+    while (!dangling.isEmpty()) {
+        const PointKey key = dangling.takeLast();
+        for (int i : std::as_const(incident[key])) {
+            if (removed[i]) continue;
+            removed[i] = true;
+            for (const QPointF& p : {res.edges[i].p1(), res.edges[i].p2()}) {
+                if (isBoundaryPoint(p)) continue;
+                PointKey end = vertexKey(p, i);
+                if (--degree[end] == 1) dangling.append(end);
             }
         }
-
-        // Update result
-        res.edges = validEdges;
-        res.endPoints = validEndPoints;
     }
+
+    // 3. Keep the remaining edges
+    QVector<QLineF> validEdges;
+    QVector<QPair<QPointF, QPointF>> validEndPoints;
+    for (int i = 0; i < res.edges.size(); ++i) {
+        if (removed[i]) continue;
+        validEdges.append(res.edges[i]);
+        validEndPoints.append(res.endPoints[i]);
+    }
+    res.edges = validEdges;
+    res.endPoints = validEndPoints;
 }
 
 QPair<int, int> VoronoiDiagram::getUpperTangent(const QVector<QPointF>& leftHull, const QVector<QPointF>& rightHull) {
