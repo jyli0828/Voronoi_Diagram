@@ -1,74 +1,37 @@
-# ---- Qt Creator ----
-*.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
-moc_*.cpp
-moc_*.h
-qrc_*.cpp
-ui_*.h
-*.qmlc
-*.jsc
-Makefile*
-*build-*
-
-# Qt Creator generated project files
-CMakeLists.txt.user
-CMakeLists.txt.user.*
-
-# ---- Build directories ----
+# Build output (qmake, Qt Creator, command line)
 build/
 build-*/
 debug/
 release/
-Debug/
-Release/
-x64/
-x86/
-
-# ---- Object / binary files ----
+Makefile*
+.qmake.stash
 *.o
 *.obj
-*.a
-*.lib
-*.so
-*.so.*
-*.dylib
-*.dll
+moc_*.cpp
+moc_predefs.h
+ui_*.h
+qrc_*.cpp
+object_script.*
+
+# Release package: exe/ is zipped for submission, not tracked
+exe/
 *.exe
-*.out
-*.app
+*.dll
 
-# ---- Qt generated / temp files ----
+# Qt Creator and editor settings
+*.pro.user
+*.pro.user.*
 *.autosave
-*.pyc
-*_pch.h.cpp
-*_resource.rc
-object_script.*.Release
-object_script.*.Debug
-*.qmlc
-*.jsc
-.qmake.stash
-*.gch
-*.pch
-
-# ---- Qt metadata ----
 .qtcreator/
-
-# ---- IDE / editor ----
 .vscode/
 .vs/
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
 .idea/
 
-# ---- OS files ----
-.DS_Store
+# Python
+__pycache__/
+*.pyc
+
+# OS
 Thumbs.db
 desktop.ini
-
-# ---- Logs ----
-*.log
+.DS_Store
