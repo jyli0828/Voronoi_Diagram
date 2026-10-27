@@ -3,10 +3,10 @@
 演算法設計與分析 Term Project：以課本 divide-and-conquer 演算法實作的 Voronoi diagram 繪製程式（C++、Qt）。
 
 M143040074 資工碩一 李俊諺  
-[作業要求](https://nsysucbyang.github.io/my-site/course/algo/algo_report.htm)  
-完整報告：[M143040074.html](M143040074.html)
+作業要求：<a href="https://nsysucbyang.github.io/my-site/course/algo/algo_report.htm" target="_blank">演算法 Term Project 實施要點</a>  
+完整報告：<a href="M143040074.html" target="_blank">M143040074.html</a>
 
-![程式介面](img/UI.png)
+<a href="img/UI.png" target="_blank"><img src="img/UI.png" alt="程式介面"></a>
 
 ## 功能
 

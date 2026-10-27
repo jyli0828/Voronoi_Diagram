@@ -107,6 +107,19 @@ figure.shot figcaption { margin-top: 8px; }
 .note { border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin: 22px 0; }
 .note .label { display: block; font-size: 12.5px; letter-spacing: .15em; color: var(--accent); }
 
+/* Image viewer */
+a.zoom { border: 0; display: block; cursor: zoom-in; }
+.cover svg { cursor: zoom-in; }
+#viewer { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; overflow: visible; }
+#viewer::backdrop { background: rgba(28, 26, 22, .88); }
+#viewer figure { margin: 0; cursor: zoom-out; }
+#viewer img, #viewer svg { display: block; max-width: 92vw; max-height: 84vh; width: auto; height: auto; background: #fff; }
+#viewer svg { width: min(84vh, 92vw); }
+#viewer figcaption { color: #ddd8cc; margin-top: 10px; font-size: 14px; }
+#viewer figcaption b { color: #fff; }
+.viewer-close { position: fixed; top: 16px; right: 20px; padding: 3px 12px; background: none; border: 1px solid rgba(255, 255, 255, .55); color: #fff; font: 13px var(--sans); cursor: pointer; }
+.viewer-close:hover { border-color: #fff; }
+
 footer { max-width: 1120px; margin: 0 auto; padding: 18px 40px 40px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
 
 @media (max-width: 960px) {
@@ -123,7 +136,7 @@ footer { max-width: 1120px; margin: 0 auto; padding: 18px 40px 40px; border-top:
 }
 @media print {
   html { background: #fff; }
-  nav.toc { display: none; }
+  nav.toc, #viewer { display: none; }
   .layout { display: block; padding-top: 24px; }
   main { max-width: none; }
   section { break-inside: auto; }
@@ -248,7 +261,7 @@ E 193 261 610 481</code></pre>
 
   <h3 id="spec-ui"><span class="n">2.2</span>功能規格與介面規格</h3>
   <figure class="shot">
-    <img src="img/UI.png" alt="程式介面：左側為畫布，右側為點座標列表與 Add Point 欄位" width="834" height="731">
+    <a class="zoom" href="img/UI.png" target="_blank" rel="noopener"><img src="img/UI.png" alt="程式介面：左側為畫布，右側為點座標列表與 Add Point 欄位" width="834" height="731"></a>
     <figcaption><b>圖 1</b>程式介面</figcaption>
   </figure>
   <table>
@@ -321,17 +334,17 @@ mingw32-make</code></pre>
   <h3 id="usage"><span class="n">3.3</span>使用說明</h3>
   <p>以任一種輸入方式（表 1）加入點，例如直接在畫布上任意點擊四個點，再點擊工具列上紅框標示的 Step，即可逐步觀察 merge 的過程，每次 merge 共有 7 個 step；點擊 Run 則直接畫出最終結果。</p>
   <figure class="shot">
-    <img src="img/step.png" alt="工具列上的 Step 按鈕以紅框標示" width="835" height="729">
+    <a class="zoom" href="img/step.png" target="_blank" rel="noopener"><img src="img/step.png" alt="工具列上的 Step 按鈕以紅框標示" width="835" height="729"></a>
     <figcaption><b>圖 2</b>Step 按鈕位置</figcaption>
   </figure>
   <div class="plates">
-    <figure><a href="img/step1.png"><img src="img/step1.png" alt="Step 1" loading="lazy"></a><figcaption><b>圖 3</b>Step 1　畫左半 Voronoi edges</figcaption></figure>
-    <figure><a href="img/step2.png"><img src="img/step2.png" alt="Step 2" loading="lazy"></a><figcaption><b>圖 4</b>Step 2　畫右半 Voronoi edges</figcaption></figure>
-    <figure><a href="img/step3.png"><img src="img/step3.png" alt="Step 3" loading="lazy"></a><figcaption><b>圖 5</b>Step 3　畫左半 convex hull</figcaption></figure>
-    <figure><a href="img/step4.png"><img src="img/step4.png" alt="Step 4" loading="lazy"></a><figcaption><b>圖 6</b>Step 4　畫右半 convex hull</figcaption></figure>
-    <figure><a href="img/step5.png"><img src="img/step5.png" alt="Step 5" loading="lazy"></a><figcaption><b>圖 7</b>Step 5　畫 merge 左右兩半後的 convex hull</figcaption></figure>
-    <figure><a href="img/step6.png"><img src="img/step6.png" alt="Step 6" loading="lazy"></a><figcaption><b>圖 8</b>Step 6　畫 hyperplane</figcaption></figure>
-    <figure><a href="img/step7.png"><img src="img/step7.png" alt="Step 7" loading="lazy"></a><figcaption><b>圖 9</b>Step 7　消線，最終結果</figcaption></figure>
+    <figure><a class="zoom" href="img/step1.png" target="_blank" rel="noopener"><img src="img/step1.png" alt="Step 1" loading="lazy"></a><figcaption><b>圖 3</b>Step 1　畫左半 Voronoi edges</figcaption></figure>
+    <figure><a class="zoom" href="img/step2.png" target="_blank" rel="noopener"><img src="img/step2.png" alt="Step 2" loading="lazy"></a><figcaption><b>圖 4</b>Step 2　畫右半 Voronoi edges</figcaption></figure>
+    <figure><a class="zoom" href="img/step3.png" target="_blank" rel="noopener"><img src="img/step3.png" alt="Step 3" loading="lazy"></a><figcaption><b>圖 5</b>Step 3　畫左半 convex hull</figcaption></figure>
+    <figure><a class="zoom" href="img/step4.png" target="_blank" rel="noopener"><img src="img/step4.png" alt="Step 4" loading="lazy"></a><figcaption><b>圖 6</b>Step 4　畫右半 convex hull</figcaption></figure>
+    <figure><a class="zoom" href="img/step5.png" target="_blank" rel="noopener"><img src="img/step5.png" alt="Step 5" loading="lazy"></a><figcaption><b>圖 7</b>Step 5　畫 merge 左右兩半後的 convex hull</figcaption></figure>
+    <figure><a class="zoom" href="img/step6.png" target="_blank" rel="noopener"><img src="img/step6.png" alt="Step 6" loading="lazy"></a><figcaption><b>圖 8</b>Step 6　畫 hyperplane</figcaption></figure>
+    <figure><a class="zoom" href="img/step7.png" target="_blank" rel="noopener"><img src="img/step7.png" alt="Step 7" loading="lazy"></a><figcaption><b>圖 9</b>Step 7　消線，最終結果</figcaption></figure>
   </div>
 </section>
 
@@ -384,7 +397,7 @@ public:
     <li><strong>三點</strong>：先求三點（三角形）之外心，以外心為起點，向三個邊的法向量方向畫射線。若邊的法向量方向（圖 10 紅實線）與中點往第三點的方向（藍實線）相同（dotProduct &gt; 0），射線方向要改為反方向（紅虛線）。</li>
   </ul>
   <figure class="shot">
-    <img src="img/triangle.png" alt="三角形外心與射線方向的判斷" loading="lazy">
+    <a class="zoom" href="img/triangle.png" target="_blank" rel="noopener"><img src="img/triangle.png" alt="三角形外心與射線方向的判斷" loading="lazy"></a>
     <figcaption><b>圖 10</b>三點時射線方向的判斷</figcaption>
   </figure>
 
@@ -420,9 +433,9 @@ public:
   </ul>
 
   <h3 id="hull"><span class="n">4.5</span>Merge 一：合併凸包</h3>
-  <p>找出左右 convex hull 的上、下切線，並 merge 左右 convex hull（參考 <a href="https://www.naukri.com/code360/library/solving-the-convex-hull-problem-using-divide-and-conquer-algorithm">Solving the convex hull problem using divide and conquer</a>）。</p>
+  <p>找出左右 convex hull 的上、下切線，並 merge 左右 convex hull（參考 <a href="https://www.naukri.com/code360/library/solving-the-convex-hull-problem-using-divide-and-conquer-algorithm" target="_blank" rel="noopener">Solving the convex hull problem using divide and conquer</a>）。</p>
   <figure class="shot">
-    <img src="img/merge_convex_hull.png" alt="以上下切線合併左右凸包" loading="lazy">
+    <a class="zoom" href="img/merge_convex_hull.png" target="_blank" rel="noopener"><img src="img/merge_convex_hull.png" alt="以上下切線合併左右凸包" loading="lazy"></a>
     <figcaption><b>圖 11</b>合併左右凸包</figcaption>
   </figure>
   <ul>
@@ -500,38 +513,38 @@ public:
     <caption><b>表 7</b>測試資料</caption>
     <thead><tr><th class="nowrap">測試輸入檔</th><th>內容</th><th>測試輸出檔</th></tr></thead>
     <tbody>
-      <tr><td class="nowrap"><a href="testcase/2~3point.txt">2~3point.txt</a></td><td>2 ~ 3 點，9 筆</td>
-        <td class="cases"><a href="testcase/output/2~3point_1.txt">1</a><a href="testcase/output/2~3point_2.txt">2</a><a href="testcase/output/2~3point_3.txt">3</a><a href="testcase/output/2~3point_4.txt">4</a><a href="testcase/output/2~3point_5.txt">5</a><a href="testcase/output/2~3point_6.txt">6</a><a href="testcase/output/2~3point_7.txt">7</a><a href="testcase/output/2~3point_8.txt">8</a><a href="testcase/output/2~3point_9.txt">9</a></td></tr>
-      <tr><td class="nowrap"><a href="testcase/4~15point.txt">4~15point.txt</a></td><td>4 ~ 15 點，11 筆</td>
-        <td class="cases"><a href="testcase/output/4~15point_1.txt">1</a><a href="testcase/output/4~15point_2.txt">2</a><a href="testcase/output/4~15point_3.txt">3</a><a href="testcase/output/4~15point_4.txt">4</a><a href="testcase/output/4~15point_5.txt">5</a><a href="testcase/output/4~15point_6.txt">6</a><a href="testcase/output/4~15point_7.txt">7</a><a href="testcase/output/4~15point_8.txt">8</a><a href="testcase/output/4~15point_9.txt">9</a><a href="testcase/output/4~15point_10.txt">10</a><a href="testcase/output/4~15point_11.txt">11</a></td></tr>
-      <tr><td class="nowrap"><a href="testcase/52,77,92,150,200.txt">52,77,92,150,200.txt</a></td><td>52、77、92、150、200 點</td>
-        <td class="cases"><a href="testcase/output/52,77,92,150,200_1.txt">52</a><a href="testcase/output/52,77,92,150,200_2.txt">77</a><a href="testcase/output/52,77,92,150,200_3.txt">92</a><a href="testcase/output/52,77,92,150,200_4.txt">150</a><a href="testcase/output/52,77,92,150,200_5.txt">200</a></td></tr>
-      <tr><td class="nowrap"><a href="testcase/collinear.txt">collinear.txt</a></td><td>特例：共線，6 筆</td>
-        <td class="cases"><a href="testcase/output/collinear_1.txt">1</a><a href="testcase/output/collinear_2.txt">2</a><a href="testcase/output/collinear_3.txt">3</a><a href="testcase/output/collinear_4.txt">4</a><a href="testcase/output/collinear_5.txt">5</a><a href="testcase/output/collinear_6.txt">6</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/2~3point.txt" target="_blank" rel="noopener">2~3point.txt</a></td><td>2 ~ 3 點，9 筆</td>
+        <td class="cases"><a href="testcase/output/2~3point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/2~3point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/2~3point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/2~3point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/2~3point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/2~3point_6.txt" target="_blank" rel="noopener">6</a><a href="testcase/output/2~3point_7.txt" target="_blank" rel="noopener">7</a><a href="testcase/output/2~3point_8.txt" target="_blank" rel="noopener">8</a><a href="testcase/output/2~3point_9.txt" target="_blank" rel="noopener">9</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/4~15point.txt" target="_blank" rel="noopener">4~15point.txt</a></td><td>4 ~ 15 點，11 筆</td>
+        <td class="cases"><a href="testcase/output/4~15point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/4~15point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/4~15point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/4~15point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/4~15point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/4~15point_6.txt" target="_blank" rel="noopener">6</a><a href="testcase/output/4~15point_7.txt" target="_blank" rel="noopener">7</a><a href="testcase/output/4~15point_8.txt" target="_blank" rel="noopener">8</a><a href="testcase/output/4~15point_9.txt" target="_blank" rel="noopener">9</a><a href="testcase/output/4~15point_10.txt" target="_blank" rel="noopener">10</a><a href="testcase/output/4~15point_11.txt" target="_blank" rel="noopener">11</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/52,77,92,150,200.txt" target="_blank" rel="noopener">52,77,92,150,200.txt</a></td><td>52、77、92、150、200 點</td>
+        <td class="cases"><a href="testcase/output/52,77,92,150,200_1.txt" target="_blank" rel="noopener">52</a><a href="testcase/output/52,77,92,150,200_2.txt" target="_blank" rel="noopener">77</a><a href="testcase/output/52,77,92,150,200_3.txt" target="_blank" rel="noopener">92</a><a href="testcase/output/52,77,92,150,200_4.txt" target="_blank" rel="noopener">150</a><a href="testcase/output/52,77,92,150,200_5.txt" target="_blank" rel="noopener">200</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/collinear.txt" target="_blank" rel="noopener">collinear.txt</a></td><td>特例：共線，6 筆</td>
+        <td class="cases"><a href="testcase/output/collinear_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/collinear_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/collinear_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/collinear_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/collinear_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/collinear_6.txt" target="_blank" rel="noopener">6</a></td></tr>
     </tbody>
   </table>
 
   <h3 id="gallery"><span class="n">5.3</span>實驗結果</h3>
   <p>以下為各點數的執行結果，點擊圖片可檢視原尺寸。</p>
   <div class="plates three">
-    <figure><a href="img/2p.png"><img src="img/2p.png" alt="2 點的結果" loading="lazy"></a><figcaption>(a) 2 點</figcaption></figure>
-    <figure><a href="img/3p-1.png"><img src="img/3p-1.png" alt="3 點的結果之一" loading="lazy"></a><figcaption>(b) 3 點之一</figcaption></figure>
-    <figure><a href="img/3p-2.png"><img src="img/3p-2.png" alt="3 點的結果之二" loading="lazy"></a><figcaption>(c) 3 點之二</figcaption></figure>
-    <figure><a href="img/3p-3.png"><img src="img/3p-3.png" alt="3 點的結果之三" loading="lazy"></a><figcaption>(d) 3 點之三</figcaption></figure>
-    <figure><a href="img/3p-4.png"><img src="img/3p-4.png" alt="3 點的結果之四" loading="lazy"></a><figcaption>(e) 3 點之四</figcaption></figure>
-    <figure><a href="img/4p-1.png"><img src="img/4p-1.png" alt="4 點的結果之一" loading="lazy"></a><figcaption>(f) 4 點之一</figcaption></figure>
-    <figure><a href="img/4p-2.png"><img src="img/4p-2.png" alt="4 點的結果之二" loading="lazy"></a><figcaption>(g) 4 點之二</figcaption></figure>
-    <figure><a href="img/4p-3.png"><img src="img/4p-3.png" alt="4 點的結果之三" loading="lazy"></a><figcaption>(h) 4 點之三</figcaption></figure>
-    <figure><a href="img/5p.png"><img src="img/5p.png" alt="5 點的結果" loading="lazy"></a><figcaption>(i) 5 點</figcaption></figure>
-    <figure><a href="img/6p.png"><img src="img/6p.png" alt="6 點的結果" loading="lazy"></a><figcaption>(j) 6 點</figcaption></figure>
-    <figure><a href="img/12p.png"><img src="img/12p.png" alt="12 點的結果" loading="lazy"></a><figcaption>(k) 12 點</figcaption></figure>
-    <figure><a href="img/15p.png"><img src="img/15p.png" alt="15 點的結果" loading="lazy"></a><figcaption>(l) 15 點</figcaption></figure>
-    <figure><a href="img/52p.png"><img src="img/52p.png" alt="52 點的結果" loading="lazy"></a><figcaption>(m) 52 點</figcaption></figure>
-    <figure><a href="img/77p.png"><img src="img/77p.png" alt="77 點的結果" loading="lazy"></a><figcaption>(n) 77 點</figcaption></figure>
-    <figure><a href="img/92p.png"><img src="img/92p.png" alt="92 點的結果" loading="lazy"></a><figcaption>(o) 92 點</figcaption></figure>
-    <figure><a href="img/150p.png"><img src="img/150p.png" alt="150 點的結果" loading="lazy"></a><figcaption>(p) 150 點</figcaption></figure>
-    <figure><a href="img/200p.png"><img src="img/200p.png" alt="200 點的結果" loading="lazy"></a><figcaption>(q) 200 點</figcaption></figure>
-    <figure><a href="img/grid-121p.png"><img src="img/grid-121p.png" alt="11 × 11 網格的結果" loading="lazy"></a><figcaption>(r) 特例：11 × 11 網格（121 點）</figcaption></figure>
+    <figure><a class="zoom" href="img/2p.png" target="_blank" rel="noopener"><img src="img/2p.png" alt="2 點的結果" loading="lazy"></a><figcaption>(a) 2 點</figcaption></figure>
+    <figure><a class="zoom" href="img/3p-1.png" target="_blank" rel="noopener"><img src="img/3p-1.png" alt="3 點的結果之一" loading="lazy"></a><figcaption>(b) 3 點之一</figcaption></figure>
+    <figure><a class="zoom" href="img/3p-2.png" target="_blank" rel="noopener"><img src="img/3p-2.png" alt="3 點的結果之二" loading="lazy"></a><figcaption>(c) 3 點之二</figcaption></figure>
+    <figure><a class="zoom" href="img/3p-3.png" target="_blank" rel="noopener"><img src="img/3p-3.png" alt="3 點的結果之三" loading="lazy"></a><figcaption>(d) 3 點之三</figcaption></figure>
+    <figure><a class="zoom" href="img/3p-4.png" target="_blank" rel="noopener"><img src="img/3p-4.png" alt="3 點的結果之四" loading="lazy"></a><figcaption>(e) 3 點之四</figcaption></figure>
+    <figure><a class="zoom" href="img/4p-1.png" target="_blank" rel="noopener"><img src="img/4p-1.png" alt="4 點的結果之一" loading="lazy"></a><figcaption>(f) 4 點之一</figcaption></figure>
+    <figure><a class="zoom" href="img/4p-2.png" target="_blank" rel="noopener"><img src="img/4p-2.png" alt="4 點的結果之二" loading="lazy"></a><figcaption>(g) 4 點之二</figcaption></figure>
+    <figure><a class="zoom" href="img/4p-3.png" target="_blank" rel="noopener"><img src="img/4p-3.png" alt="4 點的結果之三" loading="lazy"></a><figcaption>(h) 4 點之三</figcaption></figure>
+    <figure><a class="zoom" href="img/5p.png" target="_blank" rel="noopener"><img src="img/5p.png" alt="5 點的結果" loading="lazy"></a><figcaption>(i) 5 點</figcaption></figure>
+    <figure><a class="zoom" href="img/6p.png" target="_blank" rel="noopener"><img src="img/6p.png" alt="6 點的結果" loading="lazy"></a><figcaption>(j) 6 點</figcaption></figure>
+    <figure><a class="zoom" href="img/12p.png" target="_blank" rel="noopener"><img src="img/12p.png" alt="12 點的結果" loading="lazy"></a><figcaption>(k) 12 點</figcaption></figure>
+    <figure><a class="zoom" href="img/15p.png" target="_blank" rel="noopener"><img src="img/15p.png" alt="15 點的結果" loading="lazy"></a><figcaption>(l) 15 點</figcaption></figure>
+    <figure><a class="zoom" href="img/52p.png" target="_blank" rel="noopener"><img src="img/52p.png" alt="52 點的結果" loading="lazy"></a><figcaption>(m) 52 點</figcaption></figure>
+    <figure><a class="zoom" href="img/77p.png" target="_blank" rel="noopener"><img src="img/77p.png" alt="77 點的結果" loading="lazy"></a><figcaption>(n) 77 點</figcaption></figure>
+    <figure><a class="zoom" href="img/92p.png" target="_blank" rel="noopener"><img src="img/92p.png" alt="92 點的結果" loading="lazy"></a><figcaption>(o) 92 點</figcaption></figure>
+    <figure><a class="zoom" href="img/150p.png" target="_blank" rel="noopener"><img src="img/150p.png" alt="150 點的結果" loading="lazy"></a><figcaption>(p) 150 點</figcaption></figure>
+    <figure><a class="zoom" href="img/200p.png" target="_blank" rel="noopener"><img src="img/200p.png" alt="200 點的結果" loading="lazy"></a><figcaption>(q) 200 點</figcaption></figure>
+    <figure><a class="zoom" href="img/grid-121p.png" target="_blank" rel="noopener"><img src="img/grid-121p.png" alt="11 × 11 網格的結果" loading="lazy"></a><figcaption>(r) 特例：11 × 11 網格（121 點）</figcaption></figure>
   </div>
   <p class="plates-caption"><b>圖 12</b>各點數的執行結果</p>
 
@@ -557,11 +570,11 @@ public:
   <table>
     <thead><tr><th class="nowrap">項目</th><th>連結</th></tr></thead>
     <tbody>
-      <tr><td class="nowrap">程式原始碼合併檔</td><td><a href="M143040074.txt">M143040074.txt</a></td></tr>
-      <tr><td class="nowrap">原始碼（GitHub）</td><td><a href="https://github.com/jyli0828/VoronoiDiagram">github.com/jyli0828/VoronoiDiagram</a></td></tr>
-      <tr><td class="nowrap">測試輸入檔</td><td><a href="testcase/2~3point.txt">2~3point.txt</a>、<a href="testcase/4~15point.txt">4~15point.txt</a>、<a href="testcase/52,77,92,150,200.txt">52,77,92,150,200.txt</a>、<a href="testcase/collinear.txt">collinear.txt</a></td></tr>
-      <tr><td class="nowrap">測試輸出檔</td><td>見表 7；輸出格式範例：<a href="testcase/output.txt">output.txt</a></td></tr>
-      <tr><td class="nowrap">隨機測資產生器</td><td><a href="testcase/pointGenerator.py">pointGenerator.py</a>（隨機生成 n 個點座標）</td></tr>
+      <tr><td class="nowrap">程式原始碼合併檔</td><td><a href="M143040074.txt" target="_blank" rel="noopener">M143040074.txt</a></td></tr>
+      <tr><td class="nowrap">原始碼（GitHub）</td><td><a href="https://github.com/jyli0828/Voronoi_Diagram" target="_blank" rel="noopener">github.com/jyli0828/Voronoi_Diagram</a></td></tr>
+      <tr><td class="nowrap">測試輸入檔</td><td><a href="testcase/2~3point.txt" target="_blank" rel="noopener">2~3point.txt</a>、<a href="testcase/4~15point.txt" target="_blank" rel="noopener">4~15point.txt</a>、<a href="testcase/52,77,92,150,200.txt" target="_blank" rel="noopener">52,77,92,150,200.txt</a>、<a href="testcase/collinear.txt" target="_blank" rel="noopener">collinear.txt</a></td></tr>
+      <tr><td class="nowrap">測試輸出檔</td><td>見表 7；輸出格式範例：<a href="testcase/output.txt" target="_blank" rel="noopener">output.txt</a></td></tr>
+      <tr><td class="nowrap">隨機測資產生器</td><td><a href="testcase/pointGenerator.py" target="_blank" rel="noopener">pointGenerator.py</a>（隨機生成 n 個點座標）</td></tr>
     </tbody>
   </table>
 </section>
@@ -570,6 +583,52 @@ public:
 </div>
 
 <footer>M143040074　李俊諺　演算法設計與分析 Term Project　Voronoi Diagram</footer>
+
+<dialog id="viewer" aria-label="放大檢視">
+  <figure>
+    <div class="viewer-media"></div>
+    <figcaption></figcaption>
+  </figure>
+  <button type="button" class="viewer-close">關閉</button>
+</dialog>
+
+<script>
+// Click an image to view it enlarged on this page; click anywhere or press Esc to close.
+// Without <dialog> support the links simply open the image in a new tab.
+(function () {
+  var viewer = document.getElementById('viewer');
+  if (typeof viewer.showModal !== 'function') return;
+  var media = viewer.querySelector('.viewer-media');
+  var caption = viewer.querySelector('figcaption');
+
+  function show(content, figure) {
+    var cap = figure && figure.querySelector('figcaption');
+    media.replaceChildren(content);
+    caption.innerHTML = cap ? cap.innerHTML : '';
+    viewer.showModal();
+  }
+
+  document.querySelectorAll('a.zoom').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      var img = new Image();
+      img.src = link.getAttribute('href');
+      img.alt = link.querySelector('img').alt;
+      show(img, link.closest('figure'));
+    });
+  });
+
+  var cover = document.querySelector('.cover svg');
+  if (cover) {
+    cover.setAttribute('tabindex', '0');
+    var showCover = function () { show(cover.cloneNode(true), cover.closest('figure')); };
+    cover.addEventListener('click', showCover);
+    cover.addEventListener('keydown', function (event) { if (event.key === 'Enter') showCover(); });
+  }
+
+  viewer.addEventListener('click', function () { viewer.close(); });
+})();
+</script>
 
 </body>
 </html>
