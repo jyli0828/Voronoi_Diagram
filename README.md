@@ -11,12 +11,12 @@ M143040074 資工碩一 李俊諺
 ## 功能
 
 - 以滑鼠點選、手動輸入 (X, Y) 或讀入輸入檔加入點；也能讀入輸出檔直接顯示圖形。
-- **Run** 直接畫出結果；**Step by step** 在每次 merge 前暫停，以不同顏色畫出左右兩個 Voronoi diagram。
+- **Run** 直接畫出結果；**Step** 把每次 merge 分成 7 步（左右兩半的 Voronoi diagram、convex hull、hyperplane、消線），以不同顏色逐步畫出。
 - 將結果存成輸出文字檔。
 
 ## 執行
 
-直接執行 `exe/VoronoiDiagram.exe`，不需安裝。執行檔需與同資料夾內的 DLL 及 `platforms/`、`styles/` 資料夾放在一起。
+從 <a href="https://github.com/jyli0828/Voronoi_Diagram/releases/latest" target="_blank">Releases</a> 下載 `VoronoiDiagram-win64.7z`，解壓後執行 `VoronoiDiagram/VoronoiDiagram.exe`，不需安裝。執行檔需與同資料夾內的 DLL 及 `platforms/`、`styles/` 資料夾放在一起。
 
 ## 編譯
 
@@ -28,7 +28,14 @@ mkdir build-release
 cd build-release
 qmake ..\VoronoiDiagram.pro CONFIG+=release
 mingw32-make
-windeployqt --release --no-translations release\VoronoiDiagram.exe
+```
+
+接著在同一個 cmd 視窗打包到 `exe/`，只放執行所需的 DLL 與外掛，內容與 Releases 的壓縮檔相同：
+
+```
+mkdir ..\exe
+copy release\VoronoiDiagram.exe ..\exe\
+windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler --skip-plugin-types generic,iconengines,imageformats,networkinformation,tls ..\exe\VoronoiDiagram.exe
 ```
 
 ## 檔案格式
@@ -42,7 +49,7 @@ windeployqt --release --no-translations release\VoronoiDiagram.exe
 |---|---|
 | `src/`、`include/` | 原始碼，演算法在 `VoronoiDiagram.cpp` |
 | `VoronoiDiagram.pro` | qmake 專案檔 |
-| `exe/` | 可直接執行的程式與所需 DLL |
+| `exe/` | 打包後的執行檔與所需 DLL（由上方打包指令產生，不納入 git） |
 | `testcase/input/` | 測試輸入檔 |
 | `testcase/output/` | 各筆測資的輸出檔 |
 | `testcase/sample_output.txt` | 輸出格式範例（11 × 11 網格） |
