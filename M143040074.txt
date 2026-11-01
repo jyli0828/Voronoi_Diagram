@@ -480,7 +480,27 @@ int main(int argc, char *argv[]) {
 #include <QStatusBar>
 #include <QCoreApplication>
 #include <QRegularExpression>
+#include <QPainter>
 #include <cmath>
+#include <functional>
+
+// Draws a 64x64 icon in fixed colors, so it stays visible in both light and dark themes
+static QIcon paintIcon(const std::function<void(QPainter &)> &draw) {
+    QPixmap pixmap(64, 64);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+    draw(painter);
+    return QIcon(pixmap);
+}
+
+// A sheet of paper, shared by the read input / read output icons
+static void drawPage(QPainter &painter) {
+    painter.setPen(QPen(QColor(120, 120, 120), 3));
+    painter.setBrush(Qt::white);
+    painter.drawRoundedRect(QRectF(12, 4, 40, 56), 4, 4);
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -590,11 +610,26 @@ void MainWindow::createActions() {
 
     // Read Input Text
     readInputAct = new QAction(tr("Read input text"), this);
+    readInputAct->setIcon(paintIcon([](QPainter &p) {
+        drawPage(p);
+        p.setPen(Qt::NoPen);
+        p.setBrush(QColor(30, 136, 229));
+        p.drawEllipse(QPointF(24, 20), 5, 5);
+        p.drawEllipse(QPointF(40, 28), 5, 5);
+        p.drawEllipse(QPointF(27, 45), 5, 5);
+    }));
     readInputAct->setStatusTip(tr("Read input text"));
     connect(readInputAct, &QAction::triggered, this, &MainWindow::onReadInput);
 
     // Read Output Text
     readOutputAct = new QAction(tr("Read output text"), this);
+    readOutputAct->setIcon(paintIcon([](QPainter &p) {
+        drawPage(p);
+        p.setPen(QPen(QColor(229, 57, 53), 4, Qt::SolidLine, Qt::RoundCap));
+        p.drawLine(QPointF(32, 34), QPointF(18, 16));
+        p.drawLine(QPointF(32, 34), QPointF(46, 18));
+        p.drawLine(QPointF(32, 34), QPointF(32, 52));
+    }));
     readOutputAct->setStatusTip(tr("Read output text"));
     connect(readOutputAct, &QAction::triggered, this, &MainWindow::onReadOutput);
 
@@ -606,13 +641,20 @@ void MainWindow::createActions() {
 
     // Step by step
     stepAct = new QAction(tr("&Step"), this);
-    stepAct->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    stepAct->setIcon(paintIcon([](QPainter &p) {
+        p.setBrush(QColor(30, 136, 229));
+        p.drawPolygon(QPolygonF({QPointF(8, 10), QPointF(40, 32), QPointF(8, 54)}));
+        p.drawRoundedRect(QRectF(44, 10, 10, 44), 2, 2);
+    }));
     stepAct->setStatusTip(tr("Step by step"));
     connect(stepAct, &QAction::triggered, canvas, &CanvasWidget::stepByStep);
 
     // Run
     runAct = new QAction(tr("&Run"), this);
-    runAct->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    runAct->setIcon(paintIcon([](QPainter &p) {
+        p.setBrush(QColor(67, 160, 71));
+        p.drawPolygon(QPolygonF({QPointF(14, 8), QPointF(56, 32), QPointF(14, 56)}));
+    }));
     runAct->setStatusTip(tr("Run"));
     connect(runAct, &QAction::triggered, canvas, &CanvasWidget::runCalculation);
 
