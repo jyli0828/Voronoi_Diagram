@@ -17,7 +17,6 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QStatusBar>
-#include <QCoreApplication>
 #include <QRegularExpression>
 #include <QPainter>
 #include <cmath>
@@ -106,6 +105,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 5. Status Bar Setup
     coordLabel = new QLabel("Pos: (0, 0)", this);
     coordLabel->setMinimumWidth(150); // Prevent text jitter by setting min width
+    caseLabel = new QLabel(this); // Which test case of the input file is shown
+    caseLabel->setContentsMargins(0, 0, 8, 0); // Space before the separator
+    statusBar()->addPermanentWidget(caseLabel);
     statusBar()->addPermanentWidget(coordLabel);
 
     // Connect mouse move signal from Canvas to update coordinates in StatusBar
@@ -172,6 +174,17 @@ void MainWindow::createActions() {
     readOutputAct->setStatusTip(tr("Read output text"));
     connect(readOutputAct, &QAction::triggered, this, &MainWindow::onReadOutput);
 
+    // Next test case of the input file
+    nextCaseAct = new QAction(tr("Next test case"), this);
+    nextCaseAct->setIcon(paintIcon([](QPainter &p) {
+        p.setBrush(QColor(251, 140, 0)); // Orange, so it is not mistaken for the blue Step icon
+        p.drawPolygon(QPolygonF({QPointF(6, 12), QPointF(30, 32), QPointF(6, 52)}));
+        p.drawPolygon(QPolygonF({QPointF(32, 12), QPointF(56, 32), QPointF(32, 52)}));
+    }));
+    nextCaseAct->setStatusTip(tr("Next test case"));
+    nextCaseAct->setEnabled(false); // Enabled after reading an input file with more test cases
+    connect(nextCaseAct, &QAction::triggered, this, &MainWindow::onNextTestCase);
+
     // Save
     saveAct = new QAction(tr("&Save"), this);
     saveAct->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton));
@@ -201,7 +214,7 @@ void MainWindow::createActions() {
     clearAct = new QAction(tr("&Clear"), this);
     clearAct->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton));
     clearAct->setStatusTip(tr("Clear"));
-    connect(clearAct, &QAction::triggered, canvas, &CanvasWidget::clearCanvas);
+    connect(clearAct, &QAction::triggered, this, &MainWindow::onClear);
 }
 
 void MainWindow::createMenus() {
@@ -223,6 +236,7 @@ void MainWindow::createToolBar() {
     toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
     toolBar->addAction(openAct);
+    toolBar->addAction(nextCaseAct);
     toolBar->addAction(saveAct);
     toolBar->addSeparator();
 
@@ -290,6 +304,9 @@ void MainWindow::readInputFormat(QFile *file) {
     int n = -1;
     bool ok = false;
 
+    // Read all test cases first, then show them one at a time
+    resetTestCases();
+
     while (!textStream.atEnd()) {
         // 1. Loop until we find the next number "n"
         ok = false;
@@ -304,18 +321,16 @@ void MainWindow::readInputFormat(QFile *file) {
         }
 
         // No more test cases (file ends without "0")
-        if (!ok) return;
+        if (!ok) break;
 
-        // 2. Number of points is zero, file test stopped
+        // 2. Number of points is zero, file test stopped (shown after the last test case)
         if (n == 0) {
-            // Display
-            QMessageBox::information(this, tr("Test Finished"), tr("讀入點數為零，檔案測試停止"));
-            return;
+            zeroPending = true;
+            break;
         }
 
         // 3. Read n points
         QVector<QPointF> points;
-        QStringList pointStrings;
 
         while (points.size() < n && !textStream.atEnd()) {
             // Coordinates may be separated by spaces or tabs
@@ -325,34 +340,51 @@ void MainWindow::readInputFormat(QFile *file) {
             if (parts.size() >= 2) {
                 bool okX, okY;
                 double x = parts[0].toDouble(&okX), y = parts[1].toDouble(&okY);
-                if (okX && okY) {
+                if (okX && okY)
                     points.append(QPointF(x, y));
-                    pointStrings.append(QString("(%1, %2)").arg(x).arg(y));
-                }
             }
         }
-
-        // 4. Update the canvas and pause
-        canvas->setPoints(points);
-        canvas->runCalculation();
-        QCoreApplication::processEvents();
-
-        QString verificationMsg = QString(tr("Read test case: %1 points\n%2\n"
-                                             "Press OK to continue the next test case."))
-                                            .arg(points.size())
-                                            .arg(pointStrings.join(", "));
-        QMessageBox msgBox(this);
-        msgBox.setWindowTitle(tr("Test Case Read"));
-        msgBox.setText(verificationMsg);
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.exec(); // This line blocks execution until the user presses "OK"
+        testCases.append(points);
     }
+
+    // 4. Show the first test case
+    onNextTestCase();
+}
+
+void MainWindow::onNextTestCase() {
+    if (currentCase + 1 < testCases.size()) {
+        ++currentCase;
+        canvas->setPoints(testCases[currentCase]);
+        canvas->runCalculation();
+        caseLabel->setText(tr("Test case %1 / %2").arg(currentCase + 1).arg(testCases.size()));
+    }
+    else if (zeroPending) {
+        zeroPending = false;
+        QMessageBox::information(this, tr("Test Finished"), tr("讀入點數為零，檔案測試停止"));
+    }
+
+    // Stays enabled after the last test case if the stop message is still to be shown
+    nextCaseAct->setEnabled(currentCase + 1 < testCases.size() || zeroPending);
+}
+
+void MainWindow::resetTestCases() {
+    testCases.clear();
+    currentCase = -1;
+    zeroPending = false;
+    caseLabel->clear();
+    nextCaseAct->setEnabled(false);
+}
+
+void MainWindow::onClear() {
+    resetTestCases();
+    canvas->clearCanvas();
 }
 
 void MainWindow::readOutputFormat(QFile *file) {
     QVector<QPointF> points;
     QVector<QLineF> edges;
     QTextStream textStream(file);
+    resetTestCases(); // The canvas no longer shows a test case of the input file
 
     while (!textStream.atEnd()) {
         QString line = textStream.readLine().trimmed();

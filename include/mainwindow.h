@@ -36,6 +36,8 @@ private slots:
     void readFile();
     void onReadInput();
     void onReadOutput();
+    void onNextTestCase();
+    void onClear();
     void saveFile();
 
     void updateMousePos(QPointF pos);
@@ -51,6 +53,7 @@ private:
 
     void readInputFormat(QFile *file);
     void readOutputFormat(QFile *file);
+    void resetTestCases(); // End the test cases of the last input file
 
     CanvasWidget *canvas;
     QListWidget *pointListWidget;
@@ -62,12 +65,19 @@ private:
     QAction *openAct;
     QAction *readInputAct;
     QAction *readOutputAct;
+    QAction *nextCaseAct;
     QAction *saveAct;
     QAction *stepAct;
     QAction *runAct;
     QAction *clearAct;
 
     QLabel *coordLabel;
+    QLabel *caseLabel;
+
+    // Test cases of the last input file, shown one at a time with "Next test case"
+    QVector<QVector<QPointF>> testCases;
+    int currentCase = -1;
+    bool zeroPending = false; // The file ends with 0, show the stop message after the last test case
 };
 
 #endif // MAINWINDOW_H

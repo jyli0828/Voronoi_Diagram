@@ -39,14 +39,22 @@ void CanvasWidget::clearCanvas() {
     updateState();
 }
 
+// A repeated point is the same site, keep only its first occurrence (in input order)
+static QVector<QPointF> removeRepeated(const QVector<QPointF>& points) {
+    QVector<QPointF> result;
+    for (const QPointF& p : points)
+        if (!result.contains(p)) result.append(p);
+    return result;
+}
+
 void CanvasWidget::setPoints(const QVector<QPointF>& newPoints) {
-    points = newPoints;
+    points = removeRepeated(newPoints);
     edges.clear();
     updateState();
 }
 
 void CanvasWidget::setDiagram(const QVector<QPointF>& newPoints, const QVector<QLineF>& newEdges) {
-    points = newPoints;
+    points = removeRepeated(newPoints);
     edges = newEdges;
     updateState();
 }
@@ -79,6 +87,7 @@ void CanvasWidget::runCalculation() {
 }
 
 void CanvasWidget::addPoint(const QPointF& p) {
+    if (points.contains(p)) return; // Already on the canvas, the diagram does not change
     points.append(p);
     edges.clear();
     updateState();

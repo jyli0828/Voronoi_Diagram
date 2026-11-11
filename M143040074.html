@@ -219,7 +219,7 @@ footer { max-width: 1120px; margin: 0 auto; padding: 16px 40px 36px; border-top:
     </tbody>
   </table>
 
-  <p><strong>輸入格式檔</strong>分為「含註解」與「不含註解」兩種，可包含多筆測資。每筆測資第一行為點的數量 n，接下來 n 行為點的座標（以空白或 Tab 分隔），檔案最後一行為 0 表示結束；<code>#</code> 之後的內容為註解。每讀入一筆測資，程式會畫出結果並顯示讀入的點數與座標，按下 OK 後再讀下一筆；讀到 0 時顯示「讀入點數為零，檔案測試停止」。</p>
+  <p><strong>輸入格式檔</strong>分為「含註解」與「不含註解」兩種，可包含多筆測資。每筆測資第一行為點的數量 n，接下來 n 行為點的座標（以空白或 Tab 分隔），檔案最後一行為 0 表示結束；<code>#</code> 之後的內容為註解。讀入檔案後先畫出第一筆測資的結果，狀態列顯示目前是第幾筆；點選工具列的 <span class="menu">Next test case</span> 畫出下一筆。最後一筆之後再點選 Next test case，若檔案以 0 結尾，會顯示「讀入點數為零，檔案測試停止」。</p>
   <figure class="listing">
     <figcaption>輸入格式檔範例</figcaption>
 <pre><code>#雙點測試
@@ -254,9 +254,10 @@ E 193 261 610 481</code></pre>
     <tbody>
       <tr><td class="nowrap">左側</td><td class="nowrap">畫布</td><td>610 × 610，固定大小，左上角為原點 (0, 0)。</td></tr>
       <tr><td class="nowrap">左上</td><td class="nowrap">選單</td><td><span class="menu">File</span>：Read input text、Read output text、Save<br><span class="menu">Execute</span>：Step、Run、Clear</td></tr>
-      <tr><td class="nowrap">左上</td><td class="nowrap">工具列</td><td>Open、Save、Step、Run、Clear</td></tr>
-      <tr><td class="nowrap">右上</td><td class="nowrap">點座標列表</td><td>顯示畫布上所有點的座標。</td></tr>
+      <tr><td class="nowrap">左上</td><td class="nowrap">工具列</td><td>Open、Next test case、Save、Step、Run、Clear</td></tr>
+      <tr><td class="nowrap">右上</td><td class="nowrap">點座標列表</td><td>顯示畫布上所有點的座標，重複的點只顯示一次。</td></tr>
       <tr><td class="nowrap">右下</td><td class="nowrap">Add Point</td><td>輸入 (X, Y) 座標後按 Add 新增點。</td></tr>
+      <tr><td class="nowrap">右下</td><td class="nowrap">Test case</td><td>讀入輸入檔後，顯示目前是第幾筆測資；讀入輸出檔或按 Clear 後清除，Next test case 也隨之停用。</td></tr>
       <tr><td class="nowrap">右下</td><td class="nowrap">Pos</td><td>即時顯示滑鼠在畫布上的位置。</td></tr>
     </tbody>
   </table>
