@@ -59,6 +59,7 @@ windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler 
 | `M143040074.txt` | 程式原始碼合併檔 |
 | `tools/merge_sources.py` | 產生程式原始碼合併檔的腳本 |
 | `tools/pointGenerator.py` | 隨機產生測試點座標 |
+| `tools/imageCheck/` | 結果圖比對工具：以暴力法逐像素檢查畫出的圖 |
 
 ## 產生程式原始碼合併檔
 
@@ -67,3 +68,28 @@ windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler 
 ```
 python tools/merge_sources.py
 ```
+
+## 檢查結果圖
+
+`tools/imageCheck` 把輸入檔的每筆測資畫在程式的畫布上（與按下 Run 相同），再和暴力法算出的答案逐像素比對。答案不使用 `VoronoiDiagram.cpp`：每一對點的垂直平分線用其他點切短後就是 Voronoi 邊，凸包另以 monotone chain 求出。檢查項目：
+
+- 每條 Voronoi 邊都有畫出紅線，且沒有多出的紅色像素（誤差 2 px 內）。
+- 凸包的青色線，檢查方式相同。
+- 每個點都有黑點，且沒有多出的黑色像素。
+
+在專案資料夾的 cmd 中編譯並執行（PATH 同上方編譯）：
+
+```
+mkdir build-imageCheck
+cd build-imageCheck
+qmake ..\tools\imageCheck\imageCheck.pro
+mingw32-make
+release\imageCheck.exe "..\testcase\input\52,77,92,150,200.txt" --save .
+```
+
+每筆測資印出一行，全部正確時結尾為 `0 of 5 images wrong`。其他選項：
+
+- `--save <資料夾>`：同時把畫出的圖存成 `<輸入檔名>_<k>.png`（資料夾需已存在；上例存在 `build-imageCheck` 中）。
+- `--images <檔名樣式>`：改為檢查現有的 PNG，`%1` 代表第幾筆，例如 `--images "52,77,92,150,200_%1.png"`。
+- `--mutate`：先故意破壞每張圖（擦掉一段邊、加一條假線、把邊移動 3 px、擦掉一個點），用來確認檢查抓得到錯，此時每筆都應為 `WRONG`。
+- `--where`：印出每個錯誤的位置。
