@@ -54,6 +54,7 @@ public:
 signals:
     void pointsModified(const QVector<QPointF>& points);
     void mouseMoved(QPointF pos);
+    void stepChanged(const QString& description); // Shown step changed, empty when no step is shown
 
 public slots:
     void clearCanvas();
@@ -78,6 +79,7 @@ private:
 
     int currentStepIndex;
 
+    void setStepIndex(int index);
     void updateState();
 };
 
@@ -162,6 +164,7 @@ private:
 
     QLabel *coordLabel;
     QLabel *caseLabel;
+    QLabel *stepLabel;
 
     // Test cases of the last input file, shown one at a time with "Next test case"
     QVector<QVector<QPointF>> testCases;
@@ -288,10 +291,17 @@ QVector<QLineF> CanvasWidget::getEdges() {
     return VoronoiDiagram::getVoronoiEdges(points);
 }
 
+void CanvasWidget::setStepIndex(int index) {
+    currentStepIndex = index;
+    // The status bar shows the step, so the text does not cover the diagram
+    bool valid = index >= 0 && index < VoronoiDiagram::steps.size();
+    emit stepChanged(valid ? VoronoiDiagram::steps[index].description : QString());
+}
+
 void CanvasWidget::updateState() {
     // Points changed, the old steps are no longer valid
     VoronoiDiagram::clearSteps();
-    currentStepIndex = -1;
+    setStepIndex(-1);
     repaint();
     emit pointsModified(points);
 }
@@ -331,7 +341,7 @@ void CanvasWidget::stepByStep() {
         currentStepIndex = -1;
     }
 
-    currentStepIndex++;
+    setStepIndex(currentStepIndex + 1);
     repaint();
 }
 
@@ -339,13 +349,13 @@ void CanvasWidget::runCalculation() {
     // No Voronoi edges for 0 or 1 distinct point
     if (VoronoiDiagram::sortAndUnique(points).size() <= 1) {
         edges.clear();
-        currentStepIndex = -1;
+        setStepIndex(-1);
         repaint();
         return;
     }
 
     edges = VoronoiDiagram::getVoronoiEdges(points);
-    currentStepIndex = VoronoiDiagram::steps.size() - 1;
+    setStepIndex(VoronoiDiagram::steps.size() - 1);
     repaint();
 }
 
@@ -440,10 +450,6 @@ void CanvasWidget::paintEvent(QPaintEvent *event) {
             drawHull(step.currentHull.mid(0, step.split)); // Left
             drawHull(step.currentHull.mid(step.split));    // Right
         }
-
-        // Description
-        painter.setPen(Qt::black);
-        painter.drawText(10, 20, step.description);
     }
     else {
         // Run
@@ -520,6 +526,12 @@ static void drawPage(QPainter &painter) {
     painter.drawRoundedRect(QRectF(12, 4, 40, 56), 4, 4);
 }
 
+// Show a status bar label only while it has text
+static void setStatusText(QLabel *label, const QString& text) {
+    label->setText(text);
+    label->setVisible(!text.isEmpty());
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
 
@@ -585,13 +597,19 @@ MainWindow::MainWindow(QWidget *parent)
     // 5. Status Bar Setup
     coordLabel = new QLabel("Pos: (0, 0)", this);
     coordLabel->setMinimumWidth(150); // Prevent text jitter by setting min width
+    stepLabel = new QLabel(this); // Which step of the merge is shown, kept off the canvas
+    stepLabel->setContentsMargins(0, 0, 8, 0); // Space before the separator
     caseLabel = new QLabel(this); // Which test case of the input file is shown
-    caseLabel->setContentsMargins(0, 0, 8, 0); // Space before the separator
+    caseLabel->setContentsMargins(0, 0, 8, 0);
+    statusBar()->addPermanentWidget(stepLabel);
     statusBar()->addPermanentWidget(caseLabel);
+    stepLabel->hide(); // Empty labels stay hidden, so the status bar shows no empty separators
+    caseLabel->hide();
     statusBar()->addPermanentWidget(coordLabel);
 
     // Connect mouse move signal from Canvas to update coordinates in StatusBar
     connect(canvas, &CanvasWidget::mouseMoved, this, &MainWindow::updateMousePos);
+    connect(canvas, &CanvasWidget::stepChanged, this, [this](const QString& description) { setStatusText(stepLabel, description); });
 
     // 6. Initialize Actions and Toolbars
     createActions();
@@ -836,7 +854,7 @@ void MainWindow::onNextTestCase() {
         ++currentCase;
         canvas->setPoints(testCases[currentCase]);
         canvas->runCalculation();
-        caseLabel->setText(tr("Test case %1 / %2").arg(currentCase + 1).arg(testCases.size()));
+        setStatusText(caseLabel, tr("Test case %1 / %2").arg(currentCase + 1).arg(testCases.size()));
     }
     else if (zeroPending) {
         zeroPending = false;
@@ -851,7 +869,7 @@ void MainWindow::resetTestCases() {
     testCases.clear();
     currentCase = -1;
     zeroPending = false;
-    caseLabel->clear();
+    setStatusText(caseLabel, QString());
     nextCaseAct->setEnabled(false);
 }
 

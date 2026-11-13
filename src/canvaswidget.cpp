@@ -25,10 +25,17 @@ QVector<QLineF> CanvasWidget::getEdges() {
     return VoronoiDiagram::getVoronoiEdges(points);
 }
 
+void CanvasWidget::setStepIndex(int index) {
+    currentStepIndex = index;
+    // The status bar shows the step, so the text does not cover the diagram
+    bool valid = index >= 0 && index < VoronoiDiagram::steps.size();
+    emit stepChanged(valid ? VoronoiDiagram::steps[index].description : QString());
+}
+
 void CanvasWidget::updateState() {
     // Points changed, the old steps are no longer valid
     VoronoiDiagram::clearSteps();
-    currentStepIndex = -1;
+    setStepIndex(-1);
     repaint();
     emit pointsModified(points);
 }
@@ -68,7 +75,7 @@ void CanvasWidget::stepByStep() {
         currentStepIndex = -1;
     }
 
-    currentStepIndex++;
+    setStepIndex(currentStepIndex + 1);
     repaint();
 }
 
@@ -76,13 +83,13 @@ void CanvasWidget::runCalculation() {
     // No Voronoi edges for 0 or 1 distinct point
     if (VoronoiDiagram::sortAndUnique(points).size() <= 1) {
         edges.clear();
-        currentStepIndex = -1;
+        setStepIndex(-1);
         repaint();
         return;
     }
 
     edges = VoronoiDiagram::getVoronoiEdges(points);
-    currentStepIndex = VoronoiDiagram::steps.size() - 1;
+    setStepIndex(VoronoiDiagram::steps.size() - 1);
     repaint();
 }
 
@@ -177,10 +184,6 @@ void CanvasWidget::paintEvent(QPaintEvent *event) {
             drawHull(step.currentHull.mid(0, step.split)); // Left
             drawHull(step.currentHull.mid(step.split));    // Right
         }
-
-        // Description
-        painter.setPen(Qt::black);
-        painter.drawText(10, 20, step.description);
     }
     else {
         // Run

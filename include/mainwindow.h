@@ -73,6 +73,7 @@ private:
 
     QLabel *coordLabel;
     QLabel *caseLabel;
+    QLabel *stepLabel;
 
     // Test cases of the last input file, shown one at a time with "Next test case"
     QVector<QVector<QPointF>> testCases;

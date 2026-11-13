@@ -12,7 +12,7 @@ M143040074 資工碩一 李俊諺
 
 - 以滑鼠點選、手動輸入 (X, Y) 或讀入輸入檔加入點；也能讀入輸出檔直接顯示圖形。
 - 輸入檔有多筆測資時，先顯示第一筆，再以工具列的 **Next test case** 按鈕逐筆查看。
-- **Run** 直接畫出結果；**Step** 把每次 merge 分成 7 步（左右兩半的 Voronoi diagram、convex hull、hyperplane、消線），以不同顏色逐步畫出。
+- **Run** 直接畫出結果；**Step** 把每次 merge 分成 7 步（左右兩半的 Voronoi diagram、convex hull、hyperplane、消線），以不同顏色逐步畫出，目前的 step 顯示在狀態列。
 - 將結果存成輸出文字檔。
 
 ## 執行

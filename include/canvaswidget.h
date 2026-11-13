@@ -31,6 +31,7 @@ public:
 signals:
     void pointsModified(const QVector<QPointF>& points);
     void mouseMoved(QPointF pos);
+    void stepChanged(const QString& description); // Shown step changed, empty when no step is shown
 
 public slots:
     void clearCanvas();
@@ -55,6 +56,7 @@ private:
 
     int currentStepIndex;
 
+    void setStepIndex(int index);
     void updateState();
 };
 

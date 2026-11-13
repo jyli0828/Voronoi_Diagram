@@ -40,6 +40,12 @@ static void drawPage(QPainter &painter) {
     painter.drawRoundedRect(QRectF(12, 4, 40, 56), 4, 4);
 }
 
+// Show a status bar label only while it has text
+static void setStatusText(QLabel *label, const QString& text) {
+    label->setText(text);
+    label->setVisible(!text.isEmpty());
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
 
@@ -105,13 +111,19 @@ MainWindow::MainWindow(QWidget *parent)
     // 5. Status Bar Setup
     coordLabel = new QLabel("Pos: (0, 0)", this);
     coordLabel->setMinimumWidth(150); // Prevent text jitter by setting min width
+    stepLabel = new QLabel(this); // Which step of the merge is shown, kept off the canvas
+    stepLabel->setContentsMargins(0, 0, 8, 0); // Space before the separator
     caseLabel = new QLabel(this); // Which test case of the input file is shown
-    caseLabel->setContentsMargins(0, 0, 8, 0); // Space before the separator
+    caseLabel->setContentsMargins(0, 0, 8, 0);
+    statusBar()->addPermanentWidget(stepLabel);
     statusBar()->addPermanentWidget(caseLabel);
+    stepLabel->hide(); // Empty labels stay hidden, so the status bar shows no empty separators
+    caseLabel->hide();
     statusBar()->addPermanentWidget(coordLabel);
 
     // Connect mouse move signal from Canvas to update coordinates in StatusBar
     connect(canvas, &CanvasWidget::mouseMoved, this, &MainWindow::updateMousePos);
+    connect(canvas, &CanvasWidget::stepChanged, this, [this](const QString& description) { setStatusText(stepLabel, description); });
 
     // 6. Initialize Actions and Toolbars
     createActions();
@@ -356,7 +368,7 @@ void MainWindow::onNextTestCase() {
         ++currentCase;
         canvas->setPoints(testCases[currentCase]);
         canvas->runCalculation();
-        caseLabel->setText(tr("Test case %1 / %2").arg(currentCase + 1).arg(testCases.size()));
+        setStatusText(caseLabel, tr("Test case %1 / %2").arg(currentCase + 1).arg(testCases.size()));
     }
     else if (zeroPending) {
         zeroPending = false;
@@ -371,7 +383,7 @@ void MainWindow::resetTestCases() {
     testCases.clear();
     currentCase = -1;
     zeroPending = false;
-    caseLabel->clear();
+    setStatusText(caseLabel, QString());
     nextCaseAct->setEnabled(false);
 }
 
