@@ -19,6 +19,7 @@ html { background: #fff; color: var(--text); }
 body { margin: 0; font: 16px/1.8 var(--sans); }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
+[id] { scroll-margin-top: 16px; }
 
 /* Header */
 .masthead {
@@ -106,7 +107,7 @@ a.zoom { display: block; cursor: zoom-in; }
 .viewer-close { position: fixed; top: 16px; right: 20px; padding: 3px 12px; background: none; border: 1px solid rgba(255, 255, 255, .6); border-radius: 3px; color: #fff; font: 13px var(--sans); cursor: pointer; }
 .viewer-close:hover { border-color: #fff; }
 
-footer { max-width: 1120px; margin: 0 auto; padding: 16px 40px 36px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+footer { max-width: 1120px; margin: 0 auto; padding: 16px 40px 36px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 2.5em; }
 
 @media (max-width: 960px) {
   .masthead { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 28px 20px 24px; }
@@ -197,9 +198,8 @@ footer { max-width: 1120px; margin: 0 auto; padding: 16px 40px 36px; border-top:
 
 <section id="intro">
   <h2><span class="n">1</span>簡介</h2>
-  <p class="lead">本程式以 C++ 與 Qt 框架實作課本的 Voronoi diagram 演算法：1 到 3 點作為 base case，以暴力法直接求解；4 點以上採用 divide and conquer，遞迴求出左右兩半的 Voronoi diagram 後再 merge。</p>
+  <p class="lead">本程式以 C++ 與 Qt 框架實作課本的 Voronoi diagram 演算法：3 點以下或所有點共線時作為 base case，直接以中垂線或三角形外心求出 Voronoi edges；其餘情況採用 divide and conquer，遞迴求出左右兩半的 Voronoi diagram 後再 merge。</p>
   <ul>
-    <li>以 Windows 11、C++、Qt 6.10.1 框架實作（Qt Creator 18.0.1 IDE）。</li>
     <li>能夠繪製 Voronoi diagram，並支援 convex hull 的繪製。</li>
     <li>可以點擊 Run 直接顯示最終結果，也能以 Step by step 觀察每一步的變化。</li>
   </ul>
@@ -209,7 +209,7 @@ footer { max-width: 1120px; margin: 0 auto; padding: 16px 40px 36px; border-top:
   <h2><span class="n">2</span>軟體規格書</h2>
 
   <h3 id="spec-io"><span class="n">2.1</span>輸入與輸出（資料）規格</h3>
-  <table>
+  <table id="tab-1">
     <caption><b>表 1</b>輸入方式</caption>
     <thead><tr><th class="nowrap">方式</th><th>操作</th></tr></thead>
     <tbody>
@@ -245,11 +245,11 @@ E 193 261 610 481</code></pre>
   </figure>
 
   <h3 id="spec-ui"><span class="n">2.2</span>功能規格與介面規格</h3>
-  <figure class="shot">
+  <figure id="fig-1" class="shot">
     <a class="zoom" href="img/UI.png" target="_blank" rel="noopener"><img src="img/UI.png" alt="程式介面：左側為畫布，右側為點座標列表與 Add Point 欄位" width="836" height="748"></a>
     <figcaption><b>圖 1</b>程式介面</figcaption>
   </figure>
-  <table>
+  <table id="tab-2">
     <caption><b>表 2</b>介面元件</caption>
     <thead><tr><th class="nowrap">位置</th><th class="nowrap">元件</th><th>功能</th></tr></thead>
     <tbody>
@@ -258,12 +258,12 @@ E 193 261 610 481</code></pre>
       <tr><td class="nowrap">左上</td><td class="nowrap">工具列</td><td>Open、Next test case、Save、Step、Run、Clear</td></tr>
       <tr><td class="nowrap">右上</td><td class="nowrap">點座標列表</td><td>顯示畫布上所有點的座標，重複的點只顯示一次。</td></tr>
       <tr><td class="nowrap">右下</td><td class="nowrap">Add Point</td><td>輸入 (X, Y) 座標後按 Add 新增點。</td></tr>
-      <tr><td class="nowrap">右下</td><td class="nowrap">Step</td><td>按 Step 或 Run 後，顯示畫布目前是 merge 的第幾個 step（Step 1 ~ 7），不遮住畫布上的圖形。</td></tr>
+      <tr><td class="nowrap">右下</td><td class="nowrap">Step</td><td>按 Step 或 Run 後，顯示畫布目前是 merge 的第幾個 step（Step 1 ~ 7）。</td></tr>
       <tr><td class="nowrap">右下</td><td class="nowrap">Test case</td><td>讀入輸入檔後，顯示目前是第幾筆測資；讀入輸出檔或按 Clear 後清除，Next test case 也隨之停用。</td></tr>
       <tr><td class="nowrap">右下</td><td class="nowrap">Pos</td><td>即時顯示滑鼠在畫布上的位置。</td></tr>
     </tbody>
   </table>
-  <table>
+  <table id="tab-3">
     <caption><b>表 3</b>線條顏色</caption>
     <thead><tr><th>顏色</th><th>意義</th></tr></thead>
     <tbody>
@@ -282,15 +282,15 @@ E 193 261 610 481</code></pre>
     <li>兩個點：找兩點中垂線。</li>
     <li>三個點：先找三點（三角形）外心，從外心出發往三邊法向量方向畫射線。</li>
   </ul>
-  <p><strong>期末目標</strong>：四個點以上，divide 成左右兩半，遞迴分割直到點數縮減為可使用暴力解的 1 ~ 3 點，再將左右兩半的解 merge，最終 merge 成原本的解。</p>
+  <p><strong>期末目標</strong>：四個點以上，divide 成左右兩半，遞迴分割直到點數縮減為可直接求解的 1 ~ 3 點，再將左右兩半的解 merge，最終 merge 成原本的解。</p>
 </section>
 
 <section id="guide">
   <h2><span class="n">3</span>軟體說明</h2>
 
   <h3 id="install"><span class="n">3.1</span>安裝說明</h3>
-  <p>執行檔位於 <code>exe</code> 資料夾：<code>VoronoiDiagram.exe</code>，不需安裝，直接執行即可。執行檔需與下列檔案放在同一個資料夾（exe 資料夾中皆已附上，請勿移除）。已在 PATH 中不含 Qt 與 MinGW 的環境下測試，可正常開啟。</p>
-  <table>
+  <p>執行檔位於 <code>exe</code> 資料夾：<code>VoronoiDiagram.exe</code>，不需安裝，直接執行即可；也可從 <a href="https://github.com/jyli0828/Voronoi_Diagram/releases/latest" target="_blank" rel="noopener">GitHub Releases</a> 下載相同內容的 <code>VoronoiDiagram-win64.7z</code>。執行檔需與下列檔案放在同一個資料夾（exe 資料夾中皆已附上，請勿移除）。已在 PATH 中不含 Qt 與 MinGW 的環境下測試，可正常開啟。</p>
+  <table id="tab-4">
     <caption><b>表 4</b>執行所需檔案</caption>
     <thead><tr><th class="nowrap">類別</th><th>檔案</th></tr></thead>
     <tbody>
@@ -312,26 +312,28 @@ cd build-release
 qmake ..\VoronoiDiagram.pro CONFIG+=release
 mingw32-make</code></pre>
   </figure>
-  <p>打包時，在同一個 cmd 視窗執行以下指令，會將執行所需的 DLL 與外掛複製到執行檔旁；或依表 4 手動複製所需檔案。</p>
+  <p>打包時，在同一個 cmd 視窗執行以下指令，會將執行檔與<a href="#tab-4">表 4</a> 的 DLL 及外掛複製到專案的 <code>exe</code> 資料夾，不含其他用不到的外掛；或依<a href="#tab-4">表 4</a> 手動複製所需檔案。</p>
   <figure class="listing">
     <figcaption>打包指令（cmd）</figcaption>
-<pre><code>windeployqt --release --no-translations release\VoronoiDiagram.exe</code></pre>
+<pre><code>mkdir ..\exe
+copy release\VoronoiDiagram.exe ..\exe\
+windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler --skip-plugin-types generic,iconengines,imageformats,networkinformation,tls ..\exe\VoronoiDiagram.exe</code></pre>
   </figure>
 
   <h3 id="usage"><span class="n">3.3</span>使用說明</h3>
-  <p>以任一種輸入方式（表 1）加入點，例如直接在畫布上任意點擊四個點，再點擊工具列上紅框標示的 Step，即可逐步觀察 merge 的過程，每次 merge 共有 7 個 step，目前的 step 顯示在右下角的狀態列；點擊 Run 則直接畫出最終結果。</p>
-  <figure class="shot">
+  <p>以任一種輸入方式（<a href="#tab-1">表 1</a>）加入點，例如直接在畫布上任意點擊四個點，再點擊工具列上紅框標示的 Step，即可逐步觀察 merge 的過程，每次 merge 共有 7 個 step，目前的 step 顯示在右下角的狀態列；點擊 Run 則直接畫出最終結果。</p>
+  <figure id="fig-2" class="shot">
     <a class="zoom" href="img/step.png" target="_blank" rel="noopener"><img src="img/step.png" alt="工具列上的 Step 按鈕以紅框標示" width="836" height="748"></a>
     <figcaption><b>圖 2</b>Step 按鈕位置</figcaption>
   </figure>
   <div class="plates">
-    <figure><a class="zoom" href="img/step1.png" target="_blank" rel="noopener"><img src="img/step1.png" alt="Step 1" loading="lazy"></a><figcaption><b>圖 3</b>Step 1　畫左半 Voronoi edges</figcaption></figure>
-    <figure><a class="zoom" href="img/step2.png" target="_blank" rel="noopener"><img src="img/step2.png" alt="Step 2" loading="lazy"></a><figcaption><b>圖 4</b>Step 2　畫右半 Voronoi edges</figcaption></figure>
-    <figure><a class="zoom" href="img/step3.png" target="_blank" rel="noopener"><img src="img/step3.png" alt="Step 3" loading="lazy"></a><figcaption><b>圖 5</b>Step 3　畫左半 convex hull</figcaption></figure>
-    <figure><a class="zoom" href="img/step4.png" target="_blank" rel="noopener"><img src="img/step4.png" alt="Step 4" loading="lazy"></a><figcaption><b>圖 6</b>Step 4　畫右半 convex hull</figcaption></figure>
-    <figure><a class="zoom" href="img/step5.png" target="_blank" rel="noopener"><img src="img/step5.png" alt="Step 5" loading="lazy"></a><figcaption><b>圖 7</b>Step 5　畫 merge 左右兩半後的 convex hull</figcaption></figure>
-    <figure><a class="zoom" href="img/step6.png" target="_blank" rel="noopener"><img src="img/step6.png" alt="Step 6" loading="lazy"></a><figcaption><b>圖 8</b>Step 6　畫 hyperplane</figcaption></figure>
-    <figure><a class="zoom" href="img/step7.png" target="_blank" rel="noopener"><img src="img/step7.png" alt="Step 7" loading="lazy"></a><figcaption><b>圖 9</b>Step 7　消線，最終結果</figcaption></figure>
+    <figure id="fig-3"><a class="zoom" href="img/step1.png" target="_blank" rel="noopener"><img src="img/step1.png" alt="Step 1" loading="lazy"></a><figcaption><b>圖 3</b>Step 1　畫左半 Voronoi edges</figcaption></figure>
+    <figure id="fig-4"><a class="zoom" href="img/step2.png" target="_blank" rel="noopener"><img src="img/step2.png" alt="Step 2" loading="lazy"></a><figcaption><b>圖 4</b>Step 2　畫右半 Voronoi edges</figcaption></figure>
+    <figure id="fig-5"><a class="zoom" href="img/step3.png" target="_blank" rel="noopener"><img src="img/step3.png" alt="Step 3" loading="lazy"></a><figcaption><b>圖 5</b>Step 3　畫左半 convex hull</figcaption></figure>
+    <figure id="fig-6"><a class="zoom" href="img/step4.png" target="_blank" rel="noopener"><img src="img/step4.png" alt="Step 4" loading="lazy"></a><figcaption><b>圖 6</b>Step 4　畫右半 convex hull</figcaption></figure>
+    <figure id="fig-7"><a class="zoom" href="img/step5.png" target="_blank" rel="noopener"><img src="img/step5.png" alt="Step 5" loading="lazy"></a><figcaption><b>圖 7</b>Step 5　畫 merge 左右兩半後的 convex hull</figcaption></figure>
+    <figure id="fig-8"><a class="zoom" href="img/step6.png" target="_blank" rel="noopener"><img src="img/step6.png" alt="Step 6" loading="lazy"></a><figcaption><b>圖 8</b>Step 6　畫 hyperplane</figcaption></figure>
+    <figure id="fig-9"><a class="zoom" href="img/step7.png" target="_blank" rel="noopener"><img src="img/step7.png" alt="Step 7" loading="lazy"></a><figcaption><b>圖 9</b>Step 7　消線，最終結果</figcaption></figure>
   </div>
 </section>
 
@@ -358,11 +360,11 @@ struct VoronoiStep {
     int split; // 0: Merged convex hull, not 0: lefthull = currentHull.mid(0, split), righthull = currentHull.mid(split)
 };
 
-// 使 QMap 能以 QPointF 作為 Key (容許些微浮點數誤差)。
+// 使 QMap 能以 QPointF 作為 Key (容許些微浮點數誤差)
 class PointKey {
 public:
     QPointF p;
-    double r; // Distance from a Voronoi vertex to its generating points
+    double r; // Distance from a Voronoi vertex to its generating points, distinguishes vertices at the same position
     PointKey(QPointF _p, double _r = 0) : p(_p), r(_r) {}
     bool operator&lt;(const PointKey&amp; other) const;
 };</code></pre>
@@ -381,9 +383,9 @@ public:
   <ul>
     <li><strong>兩點</strong>：視為共線。</li>
     <li><strong>共線</strong>：各相鄰兩點畫中垂線。遞迴過程中的子問題若所有點共線（例如網格中同一行的點），也直接以此方式求解，不進行 merge。</li>
-    <li><strong>三點</strong>：先求三點（三角形）之外心，以外心為起點，向三個邊的法向量方向畫射線。若邊的法向量方向（圖 10 紅實線）與中點往第三點的方向（藍實線）相同（dotProduct &gt; 0），射線方向要改為反方向（紅虛線）。</li>
+    <li><strong>三點</strong>：先求三點（三角形）之外心，以外心為起點，向三個邊的法向量方向畫射線。若邊的法向量方向（<a href="#fig-10">圖 10</a> 紅實線）與中點往第三點的方向（藍實線）相同（dotProduct &gt; 0），射線方向要改為反方向（紅虛線）。</li>
   </ul>
-  <figure class="shot">
+  <figure id="fig-10" class="shot">
     <a class="zoom" href="img/triangle.png" target="_blank" rel="noopener"><img src="img/triangle.png" alt="三角形外心與射線方向的判斷" loading="lazy"></a>
     <figcaption><b>圖 10</b>三點時射線方向的判斷</figcaption>
   </figure>
@@ -414,19 +416,19 @@ public:
 }</code></pre>
   </figure>
   <ul>
-    <li><strong>Base case</strong>：三點以下直接暴力解。</li>
+    <li><strong>Base case</strong>：三點以下或所有點共線時，直接以中垂線或外心求解（見 <a href="#base">4.3</a>）。</li>
     <li><strong>Divide</strong>：點已依 x 座標排序，切成左右各一半的點，分別遞迴求出左右兩半的 Voronoi diagram。</li>
-    <li><strong>Merge</strong> 是最困難的部分，分成合併凸包、找 hyperplane、消線三個步驟（4.5 ~ 4.7）。</li>
+    <li><strong>Merge</strong> 是最困難的部分，分成合併凸包、找 hyperplane、消線三個步驟（<a href="#hull">4.5</a> ~ <a href="#trim">4.7</a>）。</li>
   </ul>
 
   <h3 id="hull"><span class="n">4.5</span>Merge 一：合併凸包</h3>
   <p>找出左右 convex hull 的上、下切線，並 merge 左右 convex hull（參考 <a href="https://www.naukri.com/code360/library/solving-the-convex-hull-problem-using-divide-and-conquer-algorithm" target="_blank" rel="noopener">Solving the convex hull problem using divide and conquer</a>）。</p>
-  <figure class="shot">
+  <figure id="fig-11" class="shot">
     <a class="zoom" href="img/merge_convex_hull.png" target="_blank" rel="noopener"><img src="img/merge_convex_hull.png" alt="以上下切線合併左右凸包" loading="lazy"></a>
     <figcaption><b>圖 11</b>合併左右凸包</figcaption>
   </figure>
   <ul>
-    <li>先找左凸包最右點、右凸包最左點，連線如圖 11 的 L1。若有多個點 x 座標相同，左凸包取 y 最大、右凸包取 y 最小的點（即 lexical order 的最後一點與第一點），以免選到共線邊上外側的點。</li>
+    <li>先找左凸包最右點、右凸包最左點，連線如<a href="#fig-11">圖 11</a> 的 L1。若有多個點 x 座標相同，左凸包取 y 最大、右凸包取 y 最小的點（即 lexical order 的最後一點與第一點），以免選到共線邊上外側的點。</li>
     <li>接著找上（下）切線：若連線穿過左右凸包，則需移動端點，左凸包逆（順）時針移動，右凸包順（逆）時針移動。</li>
     <li>以 cross product 判斷是否穿過凸包。二維的 cross product 可將 z 分量視為 0 計算，結果只有 z 分量，可視為一純量：oa = (x1, y1)、ob = (x2, y2) 時，cross product = x1y2 − y1x2。注意此座標系的 +y 軸往下，與笛卡兒座標系不同；依右手定則，結果 &gt; 0（&lt; 0）時拇指垂直進入（出來）xy 平面，其餘四指為順（逆）時針旋轉。</li>
     <li>以找上切線 T1 為例：L1 穿過右凸包（cross product &lt; 0），右凸包順時針移動得到 L2；L2 穿過左凸包（cross product &gt; 0），左凸包逆時針移動得到 L3；依此類推，L4 再移動後得到 T1。</li>
@@ -457,12 +459,12 @@ public:
   <h3 id="trim"><span class="n">4.7</span>Merge 三：消線</h3>
   <ul>
     <li>與找 hyperplane 一起進行：在交點處，進入與離開的 hyperplane 把平面分成兩側（靠 L 的為左側）。被撞到的左 Voronoi 邊只保留在左側的部分、右 Voronoi 邊只保留在右側的部分，另一端更新為交點；若整條邊都在錯誤的一側則直接移除。</li>
-    <li>此外需移除 dangling edges，即完全未與 hyperplane 相交、位於錯誤一側的邊：反覆移除「有一端為非無限遠、且度數 ≤ 1 的頂點」的邊。頂點以「位置 + 到生成點的距離 <code>r</code>」辨識（見 4.1）。</li>
+    <li>此外需移除 dangling edges，即完全未與 hyperplane 相交、位於錯誤一側的邊：反覆移除「有一端為非無限遠、且度數 ≤ 1 的頂點」的邊。頂點以「位置 + 到生成點的距離 <code>r</code>」辨識（見 <a href="#data">4.1</a>）。</li>
   </ul>
 
   <h3 id="steps"><span class="n">4.8</span>Step by step</h3>
   <p>每次 merge 分為 7 個步驟逐步呈現，每按一次 Step 前進一步。</p>
-  <table>
+  <table id="tab-5">
     <caption><b>表 5</b>Step by step 的步驟</caption>
     <thead><tr><th class="nowrap">Step</th><th>動作</th><th>顏色</th></tr></thead>
     <tbody>
@@ -477,16 +479,16 @@ public:
   </table>
 
   <h3 id="complexity"><span class="n">4.9</span>時間複雜度</h3>
-  <p>設 n 為點數。程式先排序一次，之後遞迴求解：T(n) = 2T(n/2) + M(n)，M(n) 為一次 merge 的時間（n 為該次 merge 的點數）。表 6 依本程式實際的做法分析各步驟。</p>
-  <table>
+  <p>設 n 為點數。程式先排序一次，之後遞迴求解：T(n) = 2T(n/2) + M(n)，M(n) 為一次 merge 的時間（n 為該次 merge 的點數）。<a href="#tab-6">表 6</a> 依本程式實際的做法分析各步驟。</p>
+  <table id="tab-6">
     <caption><b>表 6</b>各步驟的時間複雜度</caption>
     <thead><tr><th class="nowrap">步驟</th><th class="nowrap">時間</th><th>說明</th></tr></thead>
     <tbody>
       <tr><td class="nowrap">排序（只做一次）</td><td class="nowrap">O(n log n)</td><td>依 lexical order 排序並移除重複點。</td></tr>
       <tr><td class="nowrap">Divide</td><td class="nowrap">O(n)</td><td>檢查是否共線、複製左右兩半的點。</td></tr>
-      <tr><td class="nowrap">合併凸包（4.5）</td><td class="nowrap">O(n)</td><td>找左凸包最右點與右凸包最左點時，各掃過凸包一次；找上（下）切線時，左凸包的端點只往同一個方向移動，右凸包也是，各自最多繞一圈；最後依序收集合併後的端點。三者都與凸包的點數成正比，而凸包點數 ≤ n。</td></tr>
-      <tr><td class="nowrap">Hyperplane（4.6）</td><td class="nowrap">一般 O(n log n)<br>最差 O(n²)</td><td>Hyperplane 的每一段都是合併後 Voronoi diagram 的一條邊，而 n 個點的 Voronoi diagram 最多有 3n − 6 條邊，所以迴圈最多執行 O(n) 次。每次以 <code>QMultiMap</code> 查出 L、R 區域的所有邊（建表 O(n log n)，每次查詢 O(log n)），再逐一檢查與平分線的交點，花費與 L、R 區域的邊數成正比。Voronoi 區域平均不到 6 條邊，所以一般情況為 O(n log n)；但若某一點的區域有 Θ(n) 條邊，且 hyperplane 連續 Θ(n) 段都以它為 L（或 R），每一段都要重新檢查這 Θ(n) 條邊，就變成 O(n²)。</td></tr>
-      <tr><td class="nowrap">消線（4.7）</td><td class="nowrap">O(n log n)</td><td>與 hyperplane 一起裁切的部分已計入上一列。移除 dangling edges 時以 <code>QMap</code> 記錄每個頂點的邊與度數（O(n log n)），之後每條邊最多被移除一次。</td></tr>
+      <tr><td class="nowrap">合併凸包（<a href="#hull">4.5</a>）</td><td class="nowrap">O(n)</td><td>找左凸包最右點與右凸包最左點時，各掃過凸包一次；找上（下）切線時，左凸包的端點只往同一個方向移動，右凸包也是，各自最多繞一圈；最後依序收集合併後的端點。三者都與凸包的點數成正比，而凸包點數 ≤ n。</td></tr>
+      <tr><td class="nowrap">Hyperplane（<a href="#hyperplane">4.6</a>）</td><td class="nowrap">一般 O(n log n)<br>最差 O(n²)</td><td>Hyperplane 的每一段都是合併後 Voronoi diagram 的一條邊，而 n 個點的 Voronoi diagram 最多有 3n − 6 條邊，所以迴圈最多執行 O(n) 次。每次以 <code>QMultiMap</code> 查出 L、R 區域的所有邊（建表 O(n log n)，每次查詢 O(log n)），再逐一檢查與平分線的交點，花費與 L、R 區域的邊數成正比。Voronoi 區域平均不到 6 條邊，所以一般情況為 O(n log n)；但若某一點的區域有 Θ(n) 條邊，且 hyperplane 連續 Θ(n) 段都以它為 L（或 R），每一段都要重新檢查這 Θ(n) 條邊，就變成 O(n²)。</td></tr>
+      <tr><td class="nowrap">消線（<a href="#trim">4.7</a>）</td><td class="nowrap">O(n log n)</td><td>與 hyperplane 一起裁切的部分已計入上一列。移除 dangling edges 時以 <code>QMap</code> 記錄每個頂點的邊與度數（O(n log n)），之後每條邊最多被移除一次。</td></tr>
       <tr><td class="nowrap">Step 記錄</td><td class="nowrap">O(n)</td><td>每次 merge 複製 7 次當時的邊與凸包，供 Step by step 顯示。</td></tr>
     </tbody>
   </table>
@@ -495,8 +497,8 @@ public:
     <li><strong>最差情況</strong>：M(n) = O(n²)，T(n) = 2T(n/2) + O(n²) = O(n²)。</li>
     <li><strong>與課本的差異</strong>：課本的 merge 為 O(n)，整體為 O(n log n)。本程式多出的部分有兩處：一是以 <code>QMap</code>、<code>QMultiMap</code> 查詢邊與頂點，多了一個 log n；二是 hyperplane 每前進一段，都重新檢查 L、R 區域的所有邊，而課本的做法是沿著區域邊界從上一個交點繼續往下找，每條邊只會走過常數次。</li>
   </ul>
-  <p>表 7 為實測結果，只計算 Voronoi diagram（不含繪圖），每個點數執行 5 次取最快的一次，在 Intel Core i5-12500、16 GB 記憶體的電腦上測得。隨機點的座標為 0 ~ 100000 的實數。最差情況為 n − 1 個點在橢圓上、1 個點在橢圓中心：中心點的區域有 n − 1 條邊，在最上層的 merge 中，hyperplane 約有 n/2 段都以它為 L（或 R）。</p>
-  <table>
+  <p><a href="#tab-7">表 7</a> 為實測結果，只計算 Voronoi diagram（不含繪圖），每個點數執行 5 次取最快的一次，在<a href="#tab-8">表 8</a> 的測試環境中測得。隨機點的座標為 0 ~ 100000 的實數。最差情況為 n − 1 個點在橢圓上、1 個點在橢圓中心：中心點的區域有 n − 1 條邊，在最上層的 merge 中，hyperplane 約有 n/2 段都以它為 L（或 R）。</p>
+  <table id="tab-7">
     <caption><b>表 7</b>執行時間（倍數為與上一列相比）</caption>
     <thead><tr><th class="nowrap">點數 n</th><th class="nowrap">隨機點（ms）</th><th class="nowrap">倍數</th><th class="nowrap">最差情況（ms）</th><th class="nowrap">倍數</th></tr></thead>
     <tbody>
@@ -514,31 +516,43 @@ public:
   <h2><span class="n">5</span>軟體測試與實驗結果</h2>
 
   <h3 id="env"><span class="n">5.1</span>測試環境</h3>
-  <table>
+  <table id="tab-8">
     <caption><b>表 8</b>測試環境</caption>
     <tbody>
-      <tr><td class="nowrap">處理器</td><td>Intel(R) Core(TM) i5-14500（2.60 GHz）</td></tr>
-      <tr><td class="nowrap">記憶體</td><td>8.00 GB（7.64 GB 可用）</td></tr>
-      <tr><td class="nowrap">作業系統</td><td>Windows 11 Education 25H2，64 位元，x64 處理器</td></tr>
+      <tr><td class="nowrap">處理器</td><td>12th Gen Intel(R) Core(TM) i5-12500（3.00 GHz，6 核心 12 執行緒）</td></tr>
+      <tr><td class="nowrap">記憶體</td><td>16.0 GB（15.7 GB 可用）</td></tr>
+      <tr><td class="nowrap">作業系統</td><td>Windows 11 Education 26H2，64 位元，x64 處理器</td></tr>
       <tr><td class="nowrap">開發工具</td><td>Qt Creator 18.0.1</td></tr>
       <tr><td class="nowrap">框架</td><td>Qt 6.10.1</td></tr>
-      <tr><td class="nowrap">語言</td><td>C++</td></tr>
-      <tr><td class="nowrap">編譯器</td><td>GCC 13.1.0（64-bit）</td></tr>
+      <tr><td class="nowrap">語言</td><td>C++17</td></tr>
+      <tr><td class="nowrap">編譯器</td><td>MinGW GCC 13.1.0（64-bit）</td></tr>
     </tbody>
   </table>
 
   <h3 id="testfiles"><span class="n">5.2</span>測試輸入檔與輸出檔</h3>
-  <p>每個輸入檔包含多筆測資，每筆測資各有一個以 Save 功能產生的輸出檔，檔名為「輸入檔名_第幾筆測資」。</p>
-  <table>
+  <p>每個輸入檔包含多筆測資，每筆測資各有一個以 Save 功能產生的輸出檔，檔名為「輸入檔名_第幾筆測資」。<a href="#tab-9">表 9</a> 的測試輸出檔欄位中，數字為第幾筆測資；每筆點數不同的檔案則標示該筆的點數。</p>
+  <table id="tab-9">
     <caption><b>表 9</b>測試資料</caption>
     <thead><tr><th class="nowrap">測試輸入檔</th><th>內容</th><th>測試輸出檔</th></tr></thead>
     <tbody>
       <tr><td class="nowrap"><a href="testcase/input/2~3point.txt" target="_blank" rel="noopener">2~3point.txt</a></td><td>2 ~ 3 點，9 筆</td>
         <td class="cases"><a href="testcase/output/2~3point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/2~3point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/2~3point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/2~3point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/2~3point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/2~3point_6.txt" target="_blank" rel="noopener">6</a><a href="testcase/output/2~3point_7.txt" target="_blank" rel="noopener">7</a><a href="testcase/output/2~3point_8.txt" target="_blank" rel="noopener">8</a><a href="testcase/output/2~3point_9.txt" target="_blank" rel="noopener">9</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/4~6point.txt" target="_blank" rel="noopener">4~6point.txt</a></td><td>4 ~ 6 點，12 筆（含共圓、共線、十字、網格、重複點）</td>
+        <td class="cases"><a href="testcase/output/4~6point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/4~6point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/4~6point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/4~6point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/4~6point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/4~6point_6.txt" target="_blank" rel="noopener">6</a><a href="testcase/output/4~6point_7.txt" target="_blank" rel="noopener">7</a><a href="testcase/output/4~6point_8.txt" target="_blank" rel="noopener">8</a><a href="testcase/output/4~6point_9.txt" target="_blank" rel="noopener">9</a><a href="testcase/output/4~6point_10.txt" target="_blank" rel="noopener">10</a><a href="testcase/output/4~6point_11.txt" target="_blank" rel="noopener">11</a><a href="testcase/output/4~6point_12.txt" target="_blank" rel="noopener">12</a></td></tr>
       <tr><td class="nowrap"><a href="testcase/input/4~15point.txt" target="_blank" rel="noopener">4~15point.txt</a></td><td>4 ~ 15 點，11 筆</td>
         <td class="cases"><a href="testcase/output/4~15point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/4~15point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/4~15point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/4~15point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/4~15point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/4~15point_6.txt" target="_blank" rel="noopener">6</a><a href="testcase/output/4~15point_7.txt" target="_blank" rel="noopener">7</a><a href="testcase/output/4~15point_8.txt" target="_blank" rel="noopener">8</a><a href="testcase/output/4~15point_9.txt" target="_blank" rel="noopener">9</a><a href="testcase/output/4~15point_10.txt" target="_blank" rel="noopener">10</a><a href="testcase/output/4~15point_11.txt" target="_blank" rel="noopener">11</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/7~12point.txt" target="_blank" rel="noopener">7~12point.txt</a></td><td>7 ~ 12 點，6 筆</td>
+        <td class="cases"><a href="testcase/output/7~12point_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/7~12point_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/7~12point_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/7~12point_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/7~12point_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/7~12point_6.txt" target="_blank" rel="noopener">6</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/13~24point.txt" target="_blank" rel="noopener">13~24point.txt</a></td><td>13、24 點</td>
+        <td class="cases"><a href="testcase/output/13~24point_1.txt" target="_blank" rel="noopener">13</a><a href="testcase/output/13~24point_2.txt" target="_blank" rel="noopener">24</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/50~100point.txt" target="_blank" rel="noopener">50~100point.txt</a></td><td>50、64、77、89、100 點</td>
+        <td class="cases"><a href="testcase/output/50~100point_1.txt" target="_blank" rel="noopener">50</a><a href="testcase/output/50~100point_2.txt" target="_blank" rel="noopener">64</a><a href="testcase/output/50~100point_3.txt" target="_blank" rel="noopener">77</a><a href="testcase/output/50~100point_4.txt" target="_blank" rel="noopener">89</a><a href="testcase/output/50~100point_5.txt" target="_blank" rel="noopener">100</a></td></tr>
       <tr><td class="nowrap"><a href="testcase/input/52,77,92,150,200.txt" target="_blank" rel="noopener">52,77,92,150,200.txt</a></td><td>52、77、92、150、200 點</td>
         <td class="cases"><a href="testcase/output/52,77,92,150,200_1.txt" target="_blank" rel="noopener">52</a><a href="testcase/output/52,77,92,150,200_2.txt" target="_blank" rel="noopener">77</a><a href="testcase/output/52,77,92,150,200_3.txt" target="_blank" rel="noopener">92</a><a href="testcase/output/52,77,92,150,200_4.txt" target="_blank" rel="noopener">150</a><a href="testcase/output/52,77,92,150,200_5.txt" target="_blank" rel="noopener">200</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/101~500point.txt" target="_blank" rel="noopener">101~500point.txt</a></td><td>101、200、300、400、500 點</td>
+        <td class="cases"><a href="testcase/output/101~500point_1.txt" target="_blank" rel="noopener">101</a><a href="testcase/output/101~500point_2.txt" target="_blank" rel="noopener">200</a><a href="testcase/output/101~500point_3.txt" target="_blank" rel="noopener">300</a><a href="testcase/output/101~500point_4.txt" target="_blank" rel="noopener">400</a><a href="testcase/output/101~500point_5.txt" target="_blank" rel="noopener">500</a></td></tr>
+      <tr><td class="nowrap"><a href="testcase/input/501~1000point.txt" target="_blank" rel="noopener">501~1000point.txt</a></td><td>501、600、750、900、1000 點</td>
+        <td class="cases"><a href="testcase/output/501~1000point_1.txt" target="_blank" rel="noopener">501</a><a href="testcase/output/501~1000point_2.txt" target="_blank" rel="noopener">600</a><a href="testcase/output/501~1000point_3.txt" target="_blank" rel="noopener">750</a><a href="testcase/output/501~1000point_4.txt" target="_blank" rel="noopener">900</a><a href="testcase/output/501~1000point_5.txt" target="_blank" rel="noopener">1000</a></td></tr>
       <tr><td class="nowrap"><a href="testcase/input/collinear.txt" target="_blank" rel="noopener">collinear.txt</a></td><td>特例：共線，6 筆</td>
         <td class="cases"><a href="testcase/output/collinear_1.txt" target="_blank" rel="noopener">1</a><a href="testcase/output/collinear_2.txt" target="_blank" rel="noopener">2</a><a href="testcase/output/collinear_3.txt" target="_blank" rel="noopener">3</a><a href="testcase/output/collinear_4.txt" target="_blank" rel="noopener">4</a><a href="testcase/output/collinear_5.txt" target="_blank" rel="noopener">5</a><a href="testcase/output/collinear_6.txt" target="_blank" rel="noopener">6</a></td></tr>
     </tbody>
@@ -546,7 +560,7 @@ public:
 
   <h3 id="gallery"><span class="n">5.3</span>實驗結果</h3>
   <p>以下為各點數的執行結果，點擊圖片可檢視原尺寸。</p>
-  <div class="plates three">
+  <div class="plates three" id="fig-12">
     <figure><a class="zoom" href="img/2p.png" target="_blank" rel="noopener"><img src="img/2p.png" alt="2 點的結果" loading="lazy"></a><figcaption>(a) 2 點</figcaption></figure>
     <figure><a class="zoom" href="img/3p-1.png" target="_blank" rel="noopener"><img src="img/3p-1.png" alt="3 點的結果之一" loading="lazy"></a><figcaption>(b) 3 點之一</figcaption></figure>
     <figure><a class="zoom" href="img/3p-2.png" target="_blank" rel="noopener"><img src="img/3p-2.png" alt="3 點的結果之二" loading="lazy"></a><figcaption>(c) 3 點之二</figcaption></figure>
@@ -569,8 +583,8 @@ public:
   <p class="plates-caption"><b>圖 12</b>各點數的執行結果</p>
 
   <h3 id="discussion"><span class="n">5.4</span>結果說明</h3>
-  <p>所有測資（含特例：共線、網格）皆可正確執行。</p>
-  <p>原先 77、150、200 點會有未能正確移除的線段，原因是原本以座標 ±1600 判斷無限遠端點，但三點接近共線時，外心可能遠超過此範圍，被誤判為無限遠端點而無法消線。另外也修正了共線的子問題、hyperplane 找不到交點、四點共圓（網格）等特殊情況，修正方式見第 4 節。</p>
+  <p>所有測資（含特例：共線、網格）皆可正確執行。<a href="#tab-9">表 9</a> 全部 66 筆測資都以 <code>tools/imageCheck</code> 檢查：把每筆測資畫在程式的畫布上（與按下 Run 相同），再和暴力法求出的答案逐像素比對。暴力法不使用本程式的演算法，每一對點的垂直平分線用其他點切短後就是 Voronoi 邊，凸包另以 monotone chain 求出。紅線、青線與點都沒有缺少或多出（誤差 2 px 內）。</p>
+  <p>原先 77、150、200 點會有未能正確移除的線段，原因是原本以座標 ±1600 判斷無限遠端點，但三點接近共線時，外心可能遠超過此範圍，被誤判為無限遠端點而無法消線。另外也修正了共線的子問題、hyperplane 找不到交點、四點共圓（網格）等特殊情況，修正方式見<a href="#design">第 4 節</a>。</p>
   <p><strong>已知限制：</strong>浮點數誤差容許值為 <code>1e-6</code>，距離小於此值的交點視為同一點；Voronoi 頂點座標需小於 <code>FAR / 2 = 5e9</code>，否則會被誤判為無限遠端點。輸入點在畫布範圍 [0, 610] 內時不會發生，因此手動輸入的座標限制在此範圍。</p>
 </section>
 
@@ -579,7 +593,6 @@ public:
   <p>在選擇 GUI 框架時，曾評估功能強大但體積較大的 Qt，以及輕量級的像 FLTK。經過嘗試後發現 FLTK 在圖形功能的實現很複雜，且實作後的繪圖效果不如 Qt，最終選擇了能讓我專注於 Voronoi diagram 演算法實作的 Qt 框架。</p>
   <p>Qt 的開發體驗相當便利，內建的圖形資料結構（如 <code>QPointF</code>、<code>QLineF</code>）可直接應用。此外，僅需一行程式碼 <code>painter.setRenderHint(QPainter::Antialiasing);</code> 即可實現反鋸齒效果，Slots and Signals 的機制也讓互動設計更直覺。</p>
   <p>在 Voronoi diagram 實作方面，雖然理論上能理解講義中的演算法，但將其轉化為程式碼時，發現許多細節處理比想像中複雜，因此在實作過程中耗費了許多時間進行除錯與邏輯驗證。</p>
-  <p>原先在 4 點以上的情況，偶爾會出現線段未能正確移除的問題，已找出原因並修正（見 5.4），目前所有測資與特例皆可正確執行。</p>
 </section>
 
 <section id="appendix">
@@ -587,11 +600,12 @@ public:
   <table>
     <thead><tr><th class="nowrap">項目</th><th>連結</th></tr></thead>
     <tbody>
-      <tr><td class="nowrap">程式原始碼合併檔</td><td><a href="M143040074.txt" target="_blank" rel="noopener">M143040074.txt</a></td></tr>
+      <tr><td class="nowrap">程式原始碼合併檔</td><td><a href="M143040074.txt" target="_blank" rel="noopener">M143040074.txt</a>（<code>include/</code> 與 <code>src/</code> 的 7 個檔案，由 <a href="tools/merge_sources.py" target="_blank" rel="noopener">merge_sources.py</a> 產生）</td></tr>
       <tr><td class="nowrap">原始碼（GitHub）</td><td><a href="https://github.com/jyli0828/Voronoi_Diagram" target="_blank" rel="noopener">github.com/jyli0828/Voronoi_Diagram</a></td></tr>
-      <tr><td class="nowrap">測試輸入檔</td><td><a href="testcase/input/2~3point.txt" target="_blank" rel="noopener">2~3point.txt</a>、<a href="testcase/input/4~15point.txt" target="_blank" rel="noopener">4~15point.txt</a>、<a href="testcase/input/52,77,92,150,200.txt" target="_blank" rel="noopener">52,77,92,150,200.txt</a>、<a href="testcase/input/collinear.txt" target="_blank" rel="noopener">collinear.txt</a></td></tr>
-      <tr><td class="nowrap">測試輸出檔</td><td>見表 9；輸出格式範例：<a href="testcase/sample_output.txt" target="_blank" rel="noopener">sample_output.txt</a></td></tr>
+      <tr><td class="nowrap">執行檔下載</td><td><a href="https://github.com/jyli0828/Voronoi_Diagram/releases/latest" target="_blank" rel="noopener">GitHub Releases</a>（<code>VoronoiDiagram-win64.7z</code>）</td></tr>
+      <tr><td class="nowrap">測試輸入與輸出檔</td><td>10 個輸入檔、66 筆測資，見<a href="#tab-9">表 9</a>；輸出格式範例：<a href="testcase/sample_output.txt" target="_blank" rel="noopener">sample_output.txt</a>（11 × 11 網格）</td></tr>
       <tr><td class="nowrap">隨機測資產生器</td><td><a href="tools/pointGenerator.py" target="_blank" rel="noopener">pointGenerator.py</a>（隨機生成 n 個點座標）</td></tr>
+      <tr><td class="nowrap">結果圖比對工具</td><td><a href="tools/imageCheck/imageCheck.cpp" target="_blank" rel="noopener">imageCheck.cpp</a>（以暴力法逐像素檢查畫出的圖，見 <a href="#discussion">5.4</a>；使用方式見 <a href="https://github.com/jyli0828/Voronoi_Diagram#檢查結果圖" target="_blank" rel="noopener">README</a>）</td></tr>
     </tbody>
   </table>
 </section>
@@ -599,7 +613,7 @@ public:
 </main>
 </div>
 
-<footer>M143040074　李俊諺　演算法設計與分析 Term Project　Voronoi Diagram</footer>
+<footer><span>M143040074 李俊諺</span><span>演算法設計與分析 Term Project</span><span>Voronoi Diagram</span></footer>
 
 <dialog id="viewer" aria-label="放大檢視">
   <figure>
