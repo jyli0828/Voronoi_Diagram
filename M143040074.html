@@ -344,11 +344,16 @@ windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler 
   <p>點與線分別採用 Qt 框架中的 <code>QPointF</code> 與 <code>QLineF</code> 類別，另外自訂以下資料結構。</p>
   <figure class="listing">
     <figcaption>include/VoronoiDiagram.h（節錄）</figcaption>
-<pre><code>// 儲存結果
+<pre><code>// 儲存結果，點以排序後的編號表示
 struct VoronoiResult {
     QVector&lt;QLineF&gt; edges; // Voronoi edges
-    QVector&lt;QPair&lt;QPointF, QPointF&gt;&gt; endPoints; // Record which two points (p1, p2) generated edges[i]
-    QVector&lt;QPointF&gt; convexHull; // Sort in counterclockwise order
+    QVector&lt;QPair&lt;int, int&gt;&gt; sites; // The two points that generated edges[i]
+    // Edges of a region in counterclockwise order: next[i][k] (prev[i][k]) is the next (previous) edge
+    // around the region of sites[i].first (k = 0) or sites[i].second (k = 1)
+    QVector&lt;std::array&lt;int, 2&gt;&gt; next, prev;
+    int firstSite = 0; // The points are firstSite, firstSite + 1, ...
+    QVector&lt;int&gt; anyEdge; // anyEdge[s - firstSite]: an edge of the region of point s, -1 if it has none
+    QVector&lt;int&gt; convexHull; // Sort in counterclockwise order
 };
 
 // 用於 step by step
@@ -358,25 +363,16 @@ struct VoronoiStep {
     QVector&lt;int&gt; edgeTypes; // Indicates the edge type (0: Normal, 1: Left voronoi, 2: Right voronoi, 3: Hyperplane)
     QString description; // For debugging
     int split; // 0: Merged convex hull, not 0: lefthull = currentHull.mid(0, split), righthull = currentHull.mid(split)
-};
-
-// 使 QMap 能以 QPointF 作為 Key (容許些微浮點數誤差)
-class PointKey {
-public:
-    QPointF p;
-    double r; // Distance from a Voronoi vertex to its generating points, distinguishes vertices at the same position
-    PointKey(QPointF _p, double _r = 0) : p(_p), r(_r) {}
-    bool operator&lt;(const PointKey&amp; other) const;
 };</code></pre>
   </figure>
-  <p><code>PointKey</code> 的 <code>r</code> 為 Voronoi 頂點到其生成點的距離。左右兩個 Voronoi diagram 可能在同一個位置各有一個頂點，但位於不同的圓上（例如網格），需以「位置 + <code>r</code>」才能區分。</p>
+  <p>每個點的 Voronoi 區域是凸多邊形，或是延伸到無限遠的凸區域。區域邊界上的邊依「往另一個生成點的方向」排成逆時針的環，<code>next</code>、<code>prev</code> 記錄每條邊在兩側區域中的下一條與上一條邊。如此不必查表，就能沿著區域邊界一條一條往下走（見 <a href="#hyperplane">4.6</a>）。Base case 以方向的角度排序建立這個環；merge 時只重建 hyperplane 經過的區域（見 <a href="#trim">4.7</a>）。</p>
 
   <h3 id="coords"><span class="n">4.2</span>座標系與前處理</h3>
   <ul>
     <li>左上角為原點 (0, 0)，往右為 +x 軸方向，往下為 +y 軸方向。</li>
     <li>一開始先將點以 lexical order 排序，並將重複的點移除。</li>
     <li>以向量（射線）來處理線段，若向量方向往右，則法向量方向往上。</li>
-    <li>射線以「單位方向 × 極大長度（<code>FAR = 1e10</code>）」表示延伸到無限遠，座標超過 <code>FAR / 2</code> 的端點視為無限遠端點；繪圖與存檔時再裁切到畫布範圍。</li>
+    <li>射線以「單位方向 × 極大長度（<code>FAR = 1e10</code>）」表示延伸到無限遠，繪圖與存檔時再裁切到畫布範圍。</li>
   </ul>
 
   <h3 id="base"><span class="n">4.3</span>三點以下與共線</h3>
@@ -393,21 +389,22 @@ public:
   <h3 id="dc"><span class="n">4.4</span>四點以上：Divide and conquer</h3>
   <figure class="listing">
     <figcaption>src/VoronoiDiagram.cpp（節錄）</figcaption>
-<pre><code>VoronoiResult VoronoiDiagram::divideAndConquer(const QVector&lt;QPointF&gt;&amp; points) {
+<pre><code>VoronoiResult VoronoiDiagram::divideAndConquer(int first, int last) {
     VoronoiResult res;
-    int n = points.size();
+    int n = last - first;
 
-    if (n == 1)
-        res.convexHull.append(points[0]);
-    else if (n == 2 || areAllCollinear(points)) // Collinear sub-problems are solved directly
-        res = solveCollinear(points);
+    if (n == 1) {
+        res.convexHull.append(first);
+        linkRegions(res, first, last);
+    }
+    else if (n == 2 || areAllCollinear(first, last)) // Collinear sub-problems are solved directly
+        res = solveCollinear(first, last);
     else if (n == 3)
-        res = voronoi3(points);
+        res = voronoi3(first);
     else {
         // Divide
-        int m = n / 2;
-        QVector&lt;QPointF&gt; leftPoints = points.mid(0, m), rightPoints = points.mid(m);
-        VoronoiResult leftRes = divideAndConquer(leftPoints), rightRes = divideAndConquer(rightPoints);
+        int m = first + n / 2;
+        VoronoiResult leftRes = divideAndConquer(first, m), rightRes = divideAndConquer(m, last);
 
         // Merge
         res = merge(leftRes, rightRes);
@@ -417,7 +414,7 @@ public:
   </figure>
   <ul>
     <li><strong>Base case</strong>：三點以下或所有點共線時，直接以中垂線或外心求解（見 <a href="#base">4.3</a>）。</li>
-    <li><strong>Divide</strong>：點已依 x 座標排序，切成左右各一半的點，分別遞迴求出左右兩半的 Voronoi diagram。</li>
+    <li><strong>Divide</strong>：點已依 x 座標排序，以編號範圍 [first, last) 表示，切成左右各一半的點，分別遞迴求出左右兩半的 Voronoi diagram。</li>
     <li><strong>Merge</strong> 是最困難的部分，分成合併凸包、找 hyperplane、消線三個步驟（<a href="#hull">4.5</a> ~ <a href="#trim">4.7</a>）。</li>
   </ul>
 
@@ -443,15 +440,18 @@ public:
 ↓
 計算目前左右點 (L, R) 的垂直平分線
 ↓
-找此平分線往下最先與 L 或 R 區域的哪些 Voronoi edge 相交
+沿 L 區域的邊界順時針走、沿 R 區域的邊界逆時針走，
+找此平分線往下離開 L、R 區域時穿過的 Voronoi edge
 (交點 = L、R 與該邊另一個生成點的外心)
 ↓
-沒有交點 → 剩下的平分線為射向無限遠的射線，結束
-有交點   → 同一個交點上的所有邊一起處理，決定下一組 (L, R)
+兩邊都沒有交點 → 剩下的平分線為射向無限遠的射線，結束
+有交點         → 取較近的交點，同一個交點上的所有邊一起處理，決定下一組 (L, R)
 ↓
 重複此步驟</code></pre>
   </figure>
   <ul>
+    <li>沿邊界走：L 區域中留下來的部分（比任何右側點都更靠近 L 的點）是凸的，hyperplane 是它的邊界，因此 hyperplane 往下走時，離開 L 區域的位置沿著區域邊界順時針前進，不會往回（R 則為逆時針）。所以每個區域記住目前走到的邊，下一段平分線從這條邊繼續找；換成新的 L 時，從 hyperplane 剛穿過的那條邊開始。走過而沒有相交的邊，都在 hyperplane 切掉的一側（見 <a href="#trim">4.7</a>）。</li>
+    <li>延伸到無限遠的區域：邊界上相鄰兩條邊的法向量（往另一個生成點的方向）夾角達 180° 以上時，兩條邊之間是通往無限遠的缺口。平分線若同時遠離這兩條邊，就會從這個缺口射向無限遠，不與任何邊相交。Hyperplane 一開始也是從 L、R 區域的缺口進入。</li>
     <li>一般情況：與左側邊相交 → 更新 L；與右側邊相交 → 更新 R；同時與左右側邊相交 → 兩者都更新。</li>
     <li>四點以上共圓（例如網格）時，同一個交點會撞到多條邊。此時所有生成點都在以交點為圓心的同一個圓上，從進入的 hyperplane 開始往 L 的方向量角度，依序為 L、…、新 L、新 R、…、R，因此新 L 取左側生成點中角度最大者，新 R 取右側生成點中角度最小者。</li>
   </ul>
@@ -459,7 +459,8 @@ public:
   <h3 id="trim"><span class="n">4.7</span>Merge 三：消線</h3>
   <ul>
     <li>與找 hyperplane 一起進行：在交點處，進入與離開的 hyperplane 把平面分成兩側（靠 L 的為左側）。被撞到的左 Voronoi 邊只保留在左側的部分、右 Voronoi 邊只保留在右側的部分，另一端更新為交點；若整條邊都在錯誤的一側則直接移除。</li>
-    <li>此外需移除 dangling edges，即完全未與 hyperplane 相交、位於錯誤一側的邊：反覆移除「有一端為非無限遠、且度數 ≤ 1 的頂點」的邊。頂點以「位置 + 到生成點的距離 <code>r</code>」辨識（見 <a href="#data">4.1</a>）。</li>
+    <li>沿區域邊界走過、沒有與平分線相交的邊，都完全位於 hyperplane 切掉的一側，直接移除，不需另外找出 dangling edges。</li>
+    <li>最後重建 hyperplane 經過的區域的邊界順序（見 <a href="#data">4.1</a>）：留下來的舊邊依原本的順序、新的 hyperplane 邊依 hyperplane 的順序（左側區域為順時針，反過來即為逆時針），兩者都已依方向的角度排好，以合併兩個已排序串列的方式組成新的環。其他區域的邊與順序都不變。</li>
   </ul>
 
   <h3 id="steps"><span class="n">4.8</span>Step by step</h3>
@@ -485,31 +486,30 @@ public:
     <thead><tr><th class="nowrap">步驟</th><th class="nowrap">時間</th><th>說明</th></tr></thead>
     <tbody>
       <tr><td class="nowrap">排序（只做一次）</td><td class="nowrap">O(n log n)</td><td>依 lexical order 排序並移除重複點。</td></tr>
-      <tr><td class="nowrap">Divide</td><td class="nowrap">O(n)</td><td>檢查是否共線、複製左右兩半的點。</td></tr>
+      <tr><td class="nowrap">Divide</td><td class="nowrap">O(n)</td><td>檢查是否共線；左右兩半以編號範圍表示，不必複製點。</td></tr>
       <tr><td class="nowrap">合併凸包（<a href="#hull">4.5</a>）</td><td class="nowrap">O(n)</td><td>找左凸包最右點與右凸包最左點時，各掃過凸包一次；找上（下）切線時，左凸包的端點只往同一個方向移動，右凸包也是，各自最多繞一圈；最後依序收集合併後的端點。三者都與凸包的點數成正比，而凸包點數 ≤ n。</td></tr>
-      <tr><td class="nowrap">Hyperplane（<a href="#hyperplane">4.6</a>）</td><td class="nowrap">一般 O(n log n)<br>最差 O(n²)</td><td>Hyperplane 的每一段都是合併後 Voronoi diagram 的一條邊，而 n 個點的 Voronoi diagram 最多有 3n − 6 條邊，所以迴圈最多執行 O(n) 次。每次以 <code>QMultiMap</code> 查出 L、R 區域的所有邊（建表 O(n log n)，每次查詢 O(log n)），再逐一檢查與平分線的交點，花費與 L、R 區域的邊數成正比。Voronoi 區域平均不到 6 條邊，所以一般情況為 O(n log n)；但若某一點的區域有 Θ(n) 條邊，且 hyperplane 連續 Θ(n) 段都以它為 L（或 R），每一段都要重新檢查這 Θ(n) 條邊，就變成 O(n²)。</td></tr>
-      <tr><td class="nowrap">消線（<a href="#trim">4.7</a>）</td><td class="nowrap">O(n log n)</td><td>與 hyperplane 一起裁切的部分已計入上一列。移除 dangling edges 時以 <code>QMap</code> 記錄每個頂點的邊與度數（O(n log n)），之後每條邊最多被移除一次。</td></tr>
+      <tr><td class="nowrap">Hyperplane（<a href="#hyperplane">4.6</a>）</td><td class="nowrap">O(n)</td><td>Hyperplane 的每一段都是合併後 Voronoi diagram 的一條邊，而 n 個點的 Voronoi diagram 最多有 3n − 6 條邊，所以迴圈最多執行 O(n) 次。找每一段離開 L、R 區域的邊時，從上次停下的邊沿區域邊界繼續走：走過的邊都會被移除，每條邊最多走過一次，合計 O(n)；每一段另外只檢查停下的一兩條邊，O(1)。一開始找 hyperplane 從哪個缺口進入 L、R 區域時，各繞區域一圈，O(n)。</td></tr>
+      <tr><td class="nowrap">消線（<a href="#trim">4.7</a>）</td><td class="nowrap">O(n)</td><td>裁切與移除在找 hyperplane 時已完成。重建 hyperplane 經過的區域的邊界順序時，每個區域合併兩個已排序的串列，與該區域的邊數成正比；所有區域的邊數合計 O(n)。</td></tr>
       <tr><td class="nowrap">Step 記錄</td><td class="nowrap">O(n)</td><td>每次 merge 複製 7 次當時的邊與凸包，供 Step by step 顯示。</td></tr>
     </tbody>
   </table>
   <ul>
-    <li><strong>一般情況</strong>：M(n) = O(n log n)，T(n) = 2T(n/2) + O(n log n) = O(n log² n)。</li>
-    <li><strong>最差情況</strong>：M(n) = O(n²)，T(n) = 2T(n/2) + O(n²) = O(n²)。</li>
-    <li><strong>與課本的差異</strong>：課本的 merge 為 O(n)，整體為 O(n log n)。本程式多出的部分有兩處：一是以 <code>QMap</code>、<code>QMultiMap</code> 查詢邊與頂點，多了一個 log n；二是 hyperplane 每前進一段，都重新檢查 L、R 區域的所有邊，而課本的做法是沿著區域邊界從上一個交點繼續往下找，每條邊只會走過常數次。</li>
+    <li><strong>整體</strong>：M(n) = O(n)，T(n) = 2T(n/2) + O(n) = O(n log n)，最差情況也相同，與課本一致。</li>
+    <li><strong>改寫前</strong>：原本每一段都以 <code>QMultiMap</code> 查出 L、R 區域的所有邊重新檢查，消線也以 <code>QMap</code> 記錄每個頂點，一般為 O(n log² n)。若某一點的區域有 Θ(n) 條邊，且 hyperplane 連續 Θ(n) 段都以它為 L（或 R），每一段都要重新檢查這 Θ(n) 條邊，最差為 O(n²)。</li>
   </ul>
-  <p><a href="#tab-7">表 7</a> 為實測結果，只計算 Voronoi diagram（不含繪圖），每個點數執行 5 次取最快的一次，在<a href="#tab-8">表 8</a> 的測試環境中測得。隨機點的座標為 0 ~ 100000 的實數。最差情況為 n − 1 個點在橢圓上、1 個點在橢圓中心：中心點的區域有 n − 1 條邊，在最上層的 merge 中，hyperplane 約有 n/2 段都以它為 L（或 R）。</p>
+  <p><a href="#tab-7">表 7</a> 為實測結果，只計算 Voronoi diagram（不含繪圖），每個點數執行 5 次取最快的一次，在<a href="#tab-8">表 8</a> 的測試環境中測得。隨機點的座標為 0 ~ 100000 的實數。最差情況是改寫前的最差情況：n − 1 個點在橢圓上、1 個點在橢圓中心。中心點的區域有 n − 1 條邊，在最上層的 merge 中，hyperplane 約有 n/2 段都以它為 L（或 R）。</p>
   <table id="tab-7">
     <caption><b>表 7</b>執行時間（倍數為與上一列相比）</caption>
-    <thead><tr><th class="nowrap">點數 n</th><th class="nowrap">隨機點（ms）</th><th class="nowrap">倍數</th><th class="nowrap">最差情況（ms）</th><th class="nowrap">倍數</th></tr></thead>
+    <thead><tr><th class="nowrap">點數 n</th><th class="nowrap">隨機點（ms）</th><th class="nowrap">倍數</th><th class="nowrap">最差情況（ms）</th><th class="nowrap">倍數</th><th class="nowrap">改寫前最差情況（ms）</th></tr></thead>
     <tbody>
-      <tr><td>1000</td><td>19.8</td><td></td><td>19.8</td><td></td></tr>
-      <tr><td>2000</td><td>45.4</td><td>2.29</td><td>59.4</td><td>3.00</td></tr>
-      <tr><td>4000</td><td>99.7</td><td>2.20</td><td>183.4</td><td>3.09</td></tr>
-      <tr><td>8000</td><td>218.7</td><td>2.19</td><td>635.0</td><td>3.46</td></tr>
-      <tr><td>16000</td><td>481.5</td><td>2.20</td><td>2556.1</td><td>4.03</td></tr>
+      <tr><td>1000</td><td>12.9</td><td></td><td>9.3</td><td></td><td>19.8</td></tr>
+      <tr><td>2000</td><td>28.5</td><td>2.21</td><td>20.1</td><td>2.16</td><td>59.4</td></tr>
+      <tr><td>4000</td><td>60.4</td><td>2.12</td><td>43.6</td><td>2.17</td><td>183.4</td></tr>
+      <tr><td>8000</td><td>129.4</td><td>2.14</td><td>97.7</td><td>2.24</td><td>635.0</td></tr>
+      <tr><td>16000</td><td>280.9</td><td>2.17</td><td>211.7</td><td>2.17</td><td>2556.1</td></tr>
     </tbody>
   </table>
-  <p>n 加倍時，O(n log n) 的時間約變為 2.2 倍，O(n²) 則為 4 倍。隨機點每次約 2.2 倍，與 O(n log n) 相近，<code>QMap</code> 多出的 log n 在此範圍內影響很小；最差情況的倍數逐漸接近 4，符合 O(n²)。</p>
+  <p>n 加倍時，O(n log n) 的時間約變為 2.2 倍，O(n²) 則為 4 倍。隨機點與最差情況每次都約 2.2 倍，符合 O(n log n)；改寫前的最差情況倍數逐漸接近 4，16000 點需 2556.1 ms，改寫後為 211.7 ms。</p>
 </section>
 
 <section id="results">
@@ -585,7 +585,7 @@ public:
   <h3 id="discussion"><span class="n">5.4</span>結果說明</h3>
   <p>所有測資（含特例：共線、網格）皆可正確執行。<a href="#tab-9">表 9</a> 全部 66 筆測資都以 <code>tools/imageCheck</code> 檢查：把每筆測資畫在程式的畫布上（與按下 Run 相同），再和暴力法求出的答案逐像素比對。暴力法不使用本程式的演算法，每一對點的垂直平分線用其他點切短後就是 Voronoi 邊，凸包另以 monotone chain 求出。紅線、青線與點都沒有缺少或多出（誤差 2 px 內）。</p>
   <p>原先 77、150、200 點會有未能正確移除的線段，原因是原本以座標 ±1600 判斷無限遠端點，但三點接近共線時，外心可能遠超過此範圍，被誤判為無限遠端點而無法消線。另外也修正了共線的子問題、hyperplane 找不到交點、四點共圓（網格）等特殊情況，修正方式見<a href="#design">第 4 節</a>。</p>
-  <p><strong>已知限制：</strong>浮點數誤差容許值為 <code>1e-6</code>，距離小於此值的交點視為同一點；Voronoi 頂點座標需小於 <code>FAR / 2 = 5e9</code>，否則會被誤判為無限遠端點。輸入點在畫布範圍 [0, 610] 內時不會發生，因此手動輸入的座標限制在此範圍。</p>
+  <p><strong>已知限制：</strong>浮點數誤差容許值為 <code>1e-6</code>，距離小於此值的交點視為同一點。射線以長度 <code>FAR = 1e10</code> 的線段表示，Voronoi 頂點需在此範圍內。輸入點為畫布範圍 [0, 610] 內的整數座標時（滑鼠點選與手動輸入皆是），不共線的三點外接圓半徑最多約 3.2 × 10⁸，不會發生；因此手動輸入的座標限制在此範圍。</p>
 </section>
 
 <section id="conclusion">

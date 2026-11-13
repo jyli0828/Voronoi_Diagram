@@ -11,11 +11,18 @@
 #include <QPointF>
 #include <QLineF>
 #include <QRectF>
+#include <array>
 
+// Points are referred to by their index in the sorted points
 struct VoronoiResult {
     QVector<QLineF> edges; // Voronoi edges
-    QVector<QPair<QPointF, QPointF>> endPoints; // Record which two points (p1, p2) generated edges[i]
-    QVector<QPointF> convexHull; // Sort in counterclockwise order
+    QVector<QPair<int, int>> sites; // The two points that generated edges[i]
+    // Edges of a region in counterclockwise order: next[i][k] (prev[i][k]) is the next (previous) edge
+    // around the region of sites[i].first (k = 0) or sites[i].second (k = 1)
+    QVector<std::array<int, 2>> next, prev;
+    int firstSite = 0; // The points are firstSite, firstSite + 1, ...
+    QVector<int> anyEdge; // anyEdge[s - firstSite]: an edge of the region of point s, -1 if it has none
+    QVector<int> convexHull; // Sort in counterclockwise order
 };
 
 struct VoronoiStep {
@@ -26,22 +33,11 @@ struct VoronoiStep {
     int split; // 0: Merged convex hull, not 0: lefthull = currentHull.mid(0, split), righthull = currentHull.mid(split)
 };
 
-// 使 QMap 能以 QPointF 作為 Key (容許些微浮點數誤差)
-class PointKey {
-public:
-    QPointF p;
-    double r; // Distance from a Voronoi vertex to its generating points, distinguishes vertices at the same position
-    PointKey(QPointF _p, double _r = 0) : p(_p), r(_r) {}
-    bool operator<(const PointKey& other) const;
-};
-
 class VoronoiDiagram {
 public:
     // Compare lexicographically
     static bool comparePoints(const QPointF& a, const QPointF& b);
     static bool compareEdges(const QLineF& e1, const QLineF& e2);
-
-    static bool isBoundaryPoint(const QPointF& p);
 
     // Clip a line segment to a rectangle, return false if it lies outside (Liang-Barsky)
     static bool clipLine(const QLineF& line, const QRectF& rect, QLineF& clipped);
@@ -56,26 +52,31 @@ public:
     static void addStep(const QVector<QLineF>& edges, const QVector<int>& types, const QVector<QPointF>& hull, QString desc = "", int split = 0);
 
 private:
-    static VoronoiResult voronoi3(const QVector<QPointF>& points);
+    static QVector<QPointF> P; // The sorted points of the current diagram
 
-    // End point of a ray from origin in direction dir, far enough to be a boundary point
+    static VoronoiResult voronoi3(int first);
+
+    // End point of a ray from origin in direction dir, far enough away to stand for infinity
     static QPointF rayEnd(const QPointF& origin, const QPointF& dir);
 
     static QLineF getPerpBisector(const QPointF& p1, const QPointF& p2);
     static QPointF calculateCircumcenter(const QPointF& p1, const QPointF& p2, const QPointF& p3);
     static qreal crossProduct(const QPointF& o, const QPointF& a, const QPointF& b);
 
-    static VoronoiResult divideAndConquer(const QVector<QPointF>& points);
+    static VoronoiResult divideAndConquer(int first, int last); // Points first, ..., last - 1
     static VoronoiResult merge(const VoronoiResult& left, const VoronoiResult& right);
 
-    static QVector<QPointF> mergeConvexHull(const QVector<QPointF>& left, const QVector<QPointF>& right, const QPair<int, int>& upperTan, const QPair<int, int>& lowerTan);
-    static void eliminateEdges(VoronoiResult& res);
+    static QVector<int> mergeConvexHull(const QVector<int>& left, const QVector<int>& right, const QPair<int, int>& upperTan, const QPair<int, int>& lowerTan);
+    static QVector<QPointF> hullPoints(const QVector<int>& hull);
 
     static QPair<int, int> getUpperTangent(const QVector<QPointF>& leftHull, const QVector<QPointF>& rightHull);
     static QPair<int, int> getLowerTangent(const QVector<QPointF>& leftHull, const QVector<QPointF>& rightHull);
 
-    static bool areAllCollinear(const QVector<QPointF>& points);
-    static VoronoiResult solveCollinear(const QVector<QPointF>& points);
+    static bool areAllCollinear(int first, int last);
+    static VoronoiResult solveCollinear(int first, int last);
+
+    // Base cases: the edges of each region, in counterclockwise order
+    static void linkRegions(VoronoiResult& res, int first, int last);
 };
 
 #endif // VORONOIDIAGRAM_H
