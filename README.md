@@ -4,6 +4,7 @@
 
 M143040074 資工碩一 李俊諺  
 作業要求：<a href="https://nsysucbyang.github.io/my-site/course/algo/algo_report.htm" target="_blank">演算法 Term Project 實施要點</a>  
+評分標準：<a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_first.pdf" target="_blank">第一次評分標準</a>、<a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_second.pdf" target="_blank">第二次評分標準</a>  
 完整報告：<a href="https://jyli0828.github.io/Voronoi_Diagram/M143040074.html" target="_blank">M143040074.html</a>
 
 <a href="img/UI.png" target="_blank"><img src="img/UI.png" alt="程式介面"></a>
