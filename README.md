@@ -1,28 +1,28 @@
 # Voronoi Diagram
 
-演算法設計與分析 Term Project：以課本 divide-and-conquer 演算法實作的 Voronoi diagram 繪製程式（C++、Qt）。
+Term project for Design and Analysis of Algorithms: a program that draws Voronoi diagrams with the divide-and-conquer algorithm from the textbook (C++, Qt).
 
-M143040074 資工碩一 李俊諺  
-作業要求：<a href="https://nsysucbyang.github.io/my-site/course/algo/algo_report.htm" target="_blank">演算法 Term Project 實施要點</a>  
-評分標準：<a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_first.pdf" target="_blank">第一次評分標準</a>、<a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_second.pdf" target="_blank">第二次評分標準</a>  
-完整報告：<a href="https://jyli0828.github.io/Voronoi_Diagram/M143040074.html" target="_blank">M143040074.html</a>
+Jun-Yan Li (M143040074), first-year M.S. student, Computer Science and Engineering  
+Requirements: <a href="https://nsysucbyang.github.io/my-site/course/algo/algo_report.htm" target="_blank">Algorithms Term Project guidelines</a> (in Chinese)  
+Grading criteria: <a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_first.pdf" target="_blank">first evaluation</a>, <a href="https://nsysucbyang.github.io/my-site/course/algo/Voronoi_evaluate_second.pdf" target="_blank">second evaluation</a> (in Chinese)  
+Full report: <a href="https://jyli0828.github.io/voronoi-diagram/M143040074.html" target="_blank">M143040074.html</a> (in Chinese)
 
-<a href="img/UI.png" target="_blank"><img src="img/UI.png" alt="程式介面"></a>
+<a href="img/UI.png" target="_blank"><img src="img/UI.png" alt="Program window"></a>
 
-## 功能
+## Features
 
-- 以滑鼠點選、手動輸入 (X, Y) 或讀入輸入檔加入點；也能讀入輸出檔直接顯示圖形。
-- 輸入檔有多筆測資時，先顯示第一筆，再以工具列的 **Next test case** 按鈕逐筆查看。
-- **Run** 直接畫出結果；**Step** 把每次 merge 分成 7 步（左右兩半的 Voronoi diagram、convex hull、hyperplane、消線），以不同顏色逐步畫出，目前的 step 顯示在狀態列。
-- 將結果存成輸出文字檔。
+- Add points by clicking, by typing (X, Y), or from an input file; an output file can also be read to show its diagram directly.
+- When an input file has several test cases, the first one is drawn, and the **Next test case** button on the toolbar steps through the rest.
+- **Run** draws the result at once; **Step** splits each merge into 7 steps (the Voronoi diagrams and convex hulls of the left and right halves, the hyperplane, and trimming), drawn one at a time in different colors, with the current step shown in the status bar.
+- Save the result as an output text file.
 
-## 執行
+## Running
 
-從 <a href="https://github.com/jyli0828/Voronoi_Diagram/releases/latest" target="_blank">Releases</a> 下載 `VoronoiDiagram-win64.7z`，解壓後執行 `VoronoiDiagram/VoronoiDiagram.exe`，不需安裝。執行檔需與同資料夾內的 DLL 及 `platforms/`、`styles/` 資料夾放在一起。
+Download `VoronoiDiagram-win64.7z` from <a href="https://github.com/jyli0828/voronoi-diagram/releases/latest" target="_blank">Releases</a>, extract it and run `VoronoiDiagram/VoronoiDiagram.exe`; no installation is needed. Keep the executable together with the DLLs and the `platforms/` and `styles/` folders next to it.
 
-## 編譯
+## Building
 
-需要 Qt 6.10（MinGW 64-bit）。用 Qt Creator 開啟 `VoronoiDiagram.pro` 編譯，或在 cmd 中執行（Qt 路徑依實際安裝位置修改）：
+Requires Qt 6.10 (MinGW 64-bit). Open `VoronoiDiagram.pro` in Qt Creator and build it, or run the following in cmd (change the Qt paths to match your installation):
 
 ```
 set PATH=C:\Qt\6.10.1\mingw_64\bin;C:\Qt\Tools\mingw1310_64\bin;%PATH%
@@ -32,7 +32,7 @@ qmake ..\VoronoiDiagram.pro CONFIG+=release
 mingw32-make
 ```
 
-接著在同一個 cmd 視窗打包到 `exe/`，只放執行所需的 DLL 與外掛，內容與 Releases 的壓縮檔相同：
+Then, in the same cmd window, package it into `exe/` with only the DLLs and plugins it needs, the same contents as the archive in Releases:
 
 ```
 mkdir ..\exe
@@ -40,45 +40,46 @@ copy release\VoronoiDiagram.exe ..\exe\
 windeployqt --release --no-translations --no-opengl-sw --no-system-d3d-compiler --skip-plugin-types generic,iconengines,imageformats,networkinformation,tls ..\exe\VoronoiDiagram.exe
 ```
 
-## 檔案格式
+## File formats
 
-- **輸入檔**：每筆測資第一行為點數 n，接著 n 行 `x y`；點數 0 表示結束，`#` 之後為註解。
-- **輸出檔**：`P x y`（點）與 `E x1 y1 x2 y2`（線段），整數座標，依 lexical order 排序；射線裁到畫布邊界（610 × 610）。
+- **Input file**: each test case starts with a line holding the number of points n, followed by n lines of `x y`. A count of 0 ends the file, and text after `#` is a comment.
+- **Output file**: `P x y` (points) and `E x1 y1 x2 y2` (edges) with integer coordinates, sorted in lexical order; rays are clipped to the canvas border (610 × 610).
 
-## 專案結構
+## Project structure
 
-| 路徑 | 內容 |
+| Path | Contents |
 |---|---|
-| `src/`、`include/` | 原始碼，演算法在 `VoronoiDiagram.cpp` |
-| `VoronoiDiagram.pro` | qmake 專案檔 |
-| `exe/` | 打包後的執行檔與所需 DLL（由上方打包指令產生，不納入 git） |
-| `testcase/input/` | 測試輸入檔 |
-| `testcase/output/` | 各筆測資的輸出檔 |
-| `testcase/sample_output.txt` | 輸出格式範例（11 × 11 網格） |
-| `img/` | 報告用圖片 |
-| `M143040074.html` | 報告 |
-| `M143040074.txt` | 程式原始碼合併檔 |
-| `tools/merge_sources.py` | 產生程式原始碼合併檔的腳本 |
-| `tools/pointGenerator.py` | 隨機產生測試點座標 |
-| `tools/imageCheck/` | 結果圖比對工具：以暴力法逐像素檢查畫出的圖 |
+| `src/`, `include/` | Source code; the algorithm is in `VoronoiDiagram.cpp` |
+| `VoronoiDiagram.pro` | qmake project file |
+| `exe/` | Packaged executable and the DLLs it needs (created by the packaging commands above, not tracked by git) |
+| `testcase/input/` | Test input files |
+| `testcase/output/` | Output file of each test case |
+| `testcase/sample_output.txt` | Sample of the output format (11 × 11 grid) |
+| `img/` | Images for the report |
+| `M143040074.html` | Report |
+| `M143040074.txt` | All source files merged into one file |
+| `tools/merge_sources.py` | Script that creates the merged source file |
+| `tools/pointGenerator.py` | Generates random test points |
+| `tools/imageCheck/` | Result image checker: checks the drawn diagrams pixel by pixel against brute force |
+| `LICENSE` | MIT License |
 
-## 產生程式原始碼合併檔
+## Creating the merged source file
 
-修改原始碼後，在專案資料夾執行：
+After changing the source code, run in the project folder:
 
 ```
 python tools/merge_sources.py
 ```
 
-## 檢查結果圖
+## Checking the result images
 
-`tools/imageCheck` 把輸入檔的每筆測資畫在程式的畫布上（與按下 Run 相同），再和暴力法算出的答案逐像素比對。答案不使用 `VoronoiDiagram.cpp`：每一對點的垂直平分線用其他點切短後就是 Voronoi 邊，凸包另以 monotone chain 求出。檢查項目：
+`tools/imageCheck` draws every test case of an input file on the program's canvas (the same as pressing Run) and compares it pixel by pixel with a brute-force answer. The answer does not use `VoronoiDiagram.cpp`: the perpendicular bisector of each pair of points, cut short by the other points, gives the Voronoi edges, and the convex hull is found separately with monotone chain. It checks:
 
-- 每條 Voronoi 邊都有畫出紅線，且沒有多出的紅色像素（誤差 2 px 內）。
-- 凸包的青色線，檢查方式相同。
-- 每個點都有黑點，且沒有多出的黑色像素。
+- Every Voronoi edge is drawn as a red line, and there are no extra red pixels (within 2 px).
+- The cyan convex hull lines, in the same way.
+- Every point has a black dot, and there are no extra black pixels.
 
-在專案資料夾的 cmd 中編譯並執行（PATH 同上方編譯）：
+Build and run it in cmd in the project folder (with PATH set as in Building):
 
 ```
 mkdir build-imageCheck
@@ -88,9 +89,13 @@ mingw32-make
 release\imageCheck.exe "..\testcase\input\52,77,92,150,200.txt" --save .
 ```
 
-每筆測資印出一行，全部正確時結尾為 `0 of 5 images wrong`。其他選項：
+It prints one line per test case and ends with `0 of 5 images wrong` when all of them are correct. Other options:
 
-- `--save <資料夾>`：同時把畫出的圖存成 `<輸入檔名>_<k>.png`（資料夾需已存在；上例存在 `build-imageCheck` 中）。
-- `--images <檔名樣式>`：改為檢查現有的 PNG，`%1` 代表第幾筆，例如 `--images "52,77,92,150,200_%1.png"`。
-- `--mutate`：先故意破壞每張圖（擦掉一段邊、加一條假線、把邊移動 3 px、擦掉一個點），用來確認檢查抓得到錯，此時每筆都應為 `WRONG`。
-- `--where`：印出每個錯誤的位置。
+- `--save <folder>`: also save the drawn images as `<input file name>_<k>.png` (the folder must exist; the example above saves them in `build-imageCheck`).
+- `--images <file name pattern>`: check existing PNG files instead, with `%1` standing for the test case number, for example `--images "52,77,92,150,200_%1.png"`.
+- `--mutate`: damage each image on purpose first (erase part of an edge, add a fake line, move an edge by 3 px, erase a point) to confirm that the check catches mistakes; every test case should then be `WRONG`.
+- `--where`: print the position of each mistake.
+
+## License
+
+[MIT License](LICENSE)
